@@ -13,6 +13,8 @@ website:
     right:
       - icon: github
         href: https://github.com/davidredek
+      - icon: linkedin
+        href: https://www.linkedin.com/in/david-redek/
 
 format:
   html:

@@ -1,18 +1,17 @@
 ---
 title: "David Redek"
-image: images/profile.jpg
 toc: false
 about: 
   template: solana
   image-shape: round
   image-width: 17em
-  links:
-    - icon: linkedin
-      text: LinkedIn
-      href: https://www.linkedin.com/in/david-redek/
-    - icon: github
-      text: GitHub
-      href: https://github.com/davidredek
+  # links:
+  #   - icon: linkedin
+  #     text: Linked
+  #     href: https://www.linkedin.com/in/david-redek/
+  #   - icon: github
+  #     text: GitHub
+  #     href: https://github.com/davidredek
 ---
 
 david \[dot\] redek \[at\] gmail \[dot\] com
