@@ -26,14 +26,19 @@ I am a statistician, data scientist, and generally an aspiring data professional
 
 ## Experience
 
-**Statistician** \| Novo Nordisk \| January 2024 - Present
+**Statistician** \| Novo Nordisk A/S 
+Copenhagen, Denmark \| Jan 2024 -- Present
+
+**Research Assistant** \|University of Copenhagen 
+Copenhagen, Denmark \| Nov 2021 -- Nov 2023
+
+**Data Scientist** \| CGI Inc.
+Prague, Czech Republic \| July 2020 -- Nov 2020
 
 ## Education
 
 **MSc. Statistics** \| University of Copenhagen
-
-Copenhagen, Denmark \| 2021 - 2023
+Copenhagen, Denmark \| 2021 -- 2023
 
 **Bc. Mathematics** \| Charles University
-
-Prague, Czech Republic \| 2017 - 2021
+Prague, Czech Republic \| 2017 -- 2021
