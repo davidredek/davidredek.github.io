@@ -2,9 +2,8 @@
 title: "Algorithmic Day-Ahead BESS Optimization"
 description: "Forecasting wholesale electricity prices using XGBoost and optimizing physical dispatch for a 10 MW / 20 MWh Battery Energy Storage System (BESS) using Mixed-Integer Linear Programming."
 date: 2026-06-10
-categories: [Python, Machine Learning, Optimization, XGBoost, MILP, Energy Markets]
 image: preview-image.png
-draft: false
+draft: true
 ---
 
 ## Project Overview

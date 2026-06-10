@@ -1,7 +1,7 @@
 ---
 title: "Interventional Risk Prediction: Causal Machine Learning Synthesis"
 subtitle: "Transitioning from Predictive to Causal Models for Cardiovascular Disease Risk in Type 1 Diabetes"
-author: "Workshop Portfolio"
+author: "David Redek"
 date: "2026-06-10"
 format:
   html:
@@ -12,8 +12,8 @@ format:
     code-tools: true
     self-contained: true
 execute:
-  warning: false
   message: false
+draft: true
 ---
 
 ## Objective & Theoretical Framework

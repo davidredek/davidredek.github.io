@@ -11,7 +11,7 @@ website:
     left:
       - text: about
         href: index.qmd
-      - text: research & projects
+      - text: projects
         href: projects.qmd
     right:
       - icon: github
