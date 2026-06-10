@@ -1,12 +1,9 @@
 [
   {
-    "listing": "/projects_landing.html",
-    "items": []
-  },
-  {
     "listing": "/projects.html",
     "items": [
-      "/posts/project_1/index.html"
+      "/posts/bess-optimization/index.html",
+      "/posts/causal-prediction/index.html"
     ]
   }
 ]

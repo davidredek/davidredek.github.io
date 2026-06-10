@@ -1,14 +1,16 @@
 project:
   type: website
   output-dir: docs
+  render:
+    - "*.qmd"
 
 website:
   title: "David Redek"
   navbar:
     left:
-      - text: Home
+      - text: about
         href: index.qmd
-      - text: Projects
+      - text: research & projects
         href: projects.qmd
     right:
       - icon: github
@@ -18,7 +20,13 @@ website:
 
 format:
   html:
-    theme: cosmo
+    theme:
+      light: cosmo
+      dark: darkly
+    # Add this section to override colors
+    theme-rules:
+      - navbar-bg: "#2c3e50" # A dark slate gray
+      - navbar-fg: "#ffffff" # White text
     css: styles.css
     toc: true
 

@@ -1,0 +1,57 @@
+---
+title: "Algorithmic Day-Ahead BESS Optimization"
+description: "Forecasting wholesale electricity prices using XGBoost and optimizing physical dispatch for a 10 MW / 20 MWh Battery Energy Storage System (BESS) using Mixed-Integer Linear Programming."
+date: 2026-06-10
+categories: [Python, Machine Learning, Optimization, XGBoost, MILP, Energy Markets]
+image: preview-image.png
+draft: false
+---
+
+## Project Overview
+
+In modern electricity grids, the high penetration of intermittent renewable energy resources (such as wind and solar) creates significant price volatility. **Battery Energy Storage Systems (BESS)** play a critical role in stabilizing the grid and capturing value through arbitrage—charging during periods of low (or negative) electricity prices and discharging during periods of high demand.
+
+This project implements an end-to-end algorithmic pipeline to maximize the profit of a **10 MW / 20 MWh battery** operating in a day-ahead wholesale electricity market. The pipeline consists of two main stages:
+1. **Day-Ahead Price Forecasting**: An XGBoost regressor models wholesale electricity prices using historical price lags and rolling volatility features, tuned using Optuna.
+2. **Optimal Dispatch Scheduling**: A Mixed-Integer Linear Program (MILP) consumes the price forecasts to solve for the profit-maximizing physical dispatch schedule, subject to battery constraints (efficiency, state-of-charge limits, charging/discharging bounds).
+
+---
+
+## Methodology
+
+### 1. Wholesale Electricity Price Forecasting
+To make profitable charging and discharging decisions, the system must forecast hourly prices for the upcoming day. 
+* **Model**: XGBoost Regressor.
+* **Features**: Time-delay embeddings (lags), rolling average volatility, hour-of-day indicators, and historical demand trends.
+* **Validation**: Time-Series Cross Validation (to prevent data leakage).
+* **Optimization**: Hyperparameters tuned via Optuna.
+
+### 2. Battery Dispatch Optimization
+Once the prices $\hat{p}_t$ are forecast for each hour $t \in \{1, \dots, 24\}$, they are fed into a Mixed-Integer Linear Programming (MILP) model to determine the optimal action $u_t$ (charge, discharge, or idle).
+
+#### Objective Function
+Maximize the day's net revenue:
+
+$$\max \sum_{t=1}^{24} \left( p^{\text{discharge}}_t \cdot \eta_{\text{discharge}} \cdot x^{\text{discharge}}_t - p^{\text{charge}}_t \cdot \frac{1}{\eta_{\text{charge}}} \cdot x^{\text{charge}}_t \right)$$
+
+where:
+* $x^{\text{discharge}}_t \ge 0$ and $x^{\text{charge}}_t \ge 0$ are the power discharged or charged at hour $t$ (in MW).
+* $\eta_{\text{discharge}}$ and $\eta_{\text{charge}}$ are the discharging and charging efficiencies (e.g., 90%).
+* $p^{\text{discharge}}_t, p^{\text{charge}}_t$ are market prices.
+
+#### Physical Constraints
+* **State of Charge (SoC) Dynamics**: $SoC_t = SoC_{t-1} + x^{\text{charge}}_t \cdot \eta_{\text{charge}} - \frac{x^{\text{discharge}}_t}{\eta_{\text{discharge}}}$.
+* **SoC Bounds**: $SoC_{\min} \le SoC_t \le SoC_{\max}$ (e.g., $10\% \le SoC_t \le 90\%$).
+* **Power Limits**: $0 \le x^{\text{discharge}}_t \le P_{\max}$ and $0 \le x^{\text{charge}}_t \le P_{\max}$ (10 MW limit).
+* **Mutual Exclusivity**: Binary decision variables ensure the battery does not charge and discharge simultaneously.
+
+---
+
+## Code & Artifacts
+
+All python code, notebooks, and mathematical scripts are located in the project folder:
+
+* **Jupyter Notebook**: [bess_final.ipynb](file:///C:/Users/david/Documents/GitHub/goliasss/goliasss.github.io/goliasss.github.io/posts/bess-optimization/bess_final.ipynb) (End-to-end walk-through of the data cleaning, modeling, optimization, and backtesting).
+* **Core Optimization Script**: [bess.py](file:///C:/Users/david/Documents/GitHub/goliasss/goliasss.github.io/goliasss.github.io/posts/bess-optimization/bess.py) (Pure Python implementation of the MILP model using `pulp`).
+* **Quantitative Backtesting**: [quant_bess.py](file:///C:/Users/david/Documents/GitHub/goliasss/goliasss.github.io/goliasss.github.io/posts/bess-optimization/quant_bess.py) (Simulates revenue generation over a historical test period, comparing forecasted optimization profits against an upper-bound "perfect foresight" oracle).
+* **Financial Models**: [finance_project.py](file:///C:/Users/david/Documents/GitHub/goliasss/goliasss.github.io/goliasss.github.io/posts/bess-optimization/finance_project.py) (Additional cash flow projections and NPV calculations for BESS assets).

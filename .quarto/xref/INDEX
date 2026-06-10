@@ -22,5 +22,11 @@
   },
   "posts/project_1/index.qmd": {
     "index.html": "7620197b"
+  },
+  "posts/bess-optimization/index.qmd": {
+    "index.html": "e0137eeb"
+  },
+  "posts/causal-prediction/index.qmd": {
+    "index.html": "8637cc82"
   }
 }

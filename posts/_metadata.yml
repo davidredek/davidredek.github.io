@@ -1,0 +1,7 @@
+freeze: auto
+
+# Enable banner style title blocks
+title-block-banner: true
+
+# Author on all pages
+author: "David Redek"
