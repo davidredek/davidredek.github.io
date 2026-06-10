@@ -6,6 +6,7 @@ project:
 
 website:
   title: "David Redek"
+  search: false
   navbar:
     left:
       - text: about
@@ -20,9 +21,7 @@ website:
 
 format:
   html:
-    theme:
-      light: cosmo
-      dark: darkly
+    theme: cosmo
     # Add this section to override colors
     theme-rules:
       - navbar-bg: "#2c3e50" # A dark slate gray
