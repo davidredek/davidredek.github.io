@@ -22,7 +22,7 @@ I am a statistician, data scientist, and generally an aspiring data professional
 
 ## Publications
 
-[Can knowledge of the spatial field trend improve phenotypic prediction accuracy through informed choice of experimental design?](https://link.springer.com/journal/10681)
+[Can knowledge of the spatial field trend improve phenotypic prediction accuracy through informed choice of experimental design?](https://link.springer.com/article/10.1007/s10681-025-03608-2)
 
 ## Experience
 
