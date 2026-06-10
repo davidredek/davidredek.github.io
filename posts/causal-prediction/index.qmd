@@ -22,7 +22,7 @@ Clinical decision-making requires estimating the impact of an action (e.g., init
 
 $$\Pr(Y = 1 \mid A = a, X)$$
 
-where $Y$ is the 5-year cardiovascular disease (CVD) outcome, $A$ is the treatment status (statin initiation), and $X$ is a vector of baseline covariates. 
+where $Y$ is the 5-year cardiovascular disease (CVD) outcome, $A$ is the treatment status (statin initiation), and $X$ is a vector of baseline covariates.
 
 However, in observational databases, treatment assignment is confounded by indication. Physicians prescribe statins to patients who already have high baseline cardiovascular risk (high LDL, older age, etc.). Consequently, the predictive model learns a confounded association, making it unsuitable for answering counterfactual questions like: *"What would this patient's risk be if we initiate statins versus if we do not?"*
 
@@ -58,10 +58,10 @@ graph LR
   style Y fill:#bbf,stroke:#333,stroke-width:2px
 ```
 
-* **Confounders ($L$)**: Variables that influence both the treatment assignment $A$ and the outcome $Y$. To estimate causal effects, we must control for all variables in $L$.
-* **Pure Predictors ($P$)**: Variables that influence $Y$ but are independent of treatment assignment $A$. Including $P$ improves the precision and predictive power of our models but is not required for confounding control.
+-   **Confounders (**$L$): Variables that influence both the treatment assignment $A$ and the outcome $Y$. To estimate causal effects, we must control for all variables in $L$.
+-   **Pure Predictors (**$P$): Variables that influence $Y$ but are independent of treatment assignment $A$. Including $P$ improves the precision and predictive power of our models but is not required for confounding control.
 
----
+------------------------------------------------------------------------
 
 ## Setup & Data Preparation
 
@@ -91,7 +91,7 @@ test <- readRDS(url("https://smartbiomed.github.io/causal-prediction-course/data
 cat("Training cohort:", nrow(train), "patients | Test cohort:", nrow(test), "patients\n")
 ```
 
----
+------------------------------------------------------------------------
 
 ## 1. Baseline Predictive Model
 
@@ -126,17 +126,17 @@ plotROC(score_steno, main = "ROC Curve (Observed)")
 plotCalibration(score_steno, main = "Calibration Curve (Observed)")
 ```
 
----
+------------------------------------------------------------------------
 
 ## 2. Interventional Estimands & Identification
 
 To make causal projections, we require the counterfactual outcomes. Identification of $\Pr(Y^a = 1 \mid X^*)$ from observed data requires three core causal assumptions:
 
-1. **Conditional Exchangeability (No Unmeasured Confounding)**: $Y^a \perp A \mid L$. Conditional on confounders $L$ (and optionally predictors $P$), treatment assignment is as good as random.
-2. **Positivity**: $0 < \Pr(A = 1 \mid L) < 1$. Every patient has a non-zero probability of receiving or not receiving statins.
-3. **Consistency**: If $A_i = a$, then $Y_i = Y_i^a$. The observed outcome matches the counterfactual outcome under the received treatment.
+1.  **Conditional Exchangeability (No Unmeasured Confounding)**: $Y^a \perp A \mid L$. Conditional on confounders $L$ (and optionally predictors $P$), treatment assignment is as good as random.
+2.  **Positivity**: $0 < \Pr(A = 1 \mid L) < 1$. Every patient has a non-zero probability of receiving or not receiving statins.
+3.  **Consistency**: If $A_i = a$, then $Y_i = Y_i^a$. The observed outcome matches the counterfactual outcome under the received treatment.
 
----
+------------------------------------------------------------------------
 
 ## 3. Estimation: G-formula and IPW
 
@@ -144,8 +144,7 @@ To make causal projections, we require the counterfactual outcomes. Identificati
 
 The G-formula (or standardization) estimates the interventional risk by fitting separate regression models for the treated ($A=1$) and untreated ($A=0$) populations:
 
-$$\Pr(Y^1 = 1 \mid X^*) = \Pr(Y = 1 \mid A=1, L, P)$$
-$$\Pr(Y^0 = 1 \mid X^*) = \Pr(Y = 1 \mid A=0, L, P)$$
+$$\Pr(Y^1 = 1 \mid X^*) = \Pr(Y = 1 \mid A=1, L, P)$$ $$\Pr(Y^0 = 1 \mid X^*) = \Pr(Y = 1 \mid A=0, L, P)$$
 
 ```{r}
 #| label: g-formula
@@ -178,11 +177,11 @@ ggplot(test, aes(x = risk_a0, y = risk_a1, color = LDL_0)) +
 
 The scatterplot shows that for all individuals, the estimated risk is lower under statin initiation ($a=1$ is below the diagonal line). The absolute risk reduction (benefit) is largest for patients with higher baseline LDL levels (indicated by warmer colors).
 
----
+------------------------------------------------------------------------
 
 ### Inverse Probability Weighting (IPW)
 
-Suppose that the polygenic risk score `steno_prs` is available in the training cohort but **will not be available at deployment**. Because `steno_prs` is a confounder, omitting it from a standard model would introduce confounding bias. 
+Suppose that the polygenic risk score `steno_prs` is available in the training cohort but **will not be available at deployment**. Because `steno_prs` is a confounder, omitting it from a standard model would introduce confounding bias.
 
 We resolve this by using **Inverse Probability Weighting (IPW)**. We estimate the propensity score $\pi(L) = \Pr(A=1 \mid L)$ on the training data using the full set of confounders $L$ (including `steno_prs`). We then fit a weighted outcome model that excludes `steno_prs` from the predictors, thereby correcting for the confounding role of `steno_prs` during training:
 
@@ -212,7 +211,7 @@ test <- test %>%
 ate_ipw <- mean(test$risk_ipw_a1 - test$risk_ipw_a0)
 ```
 
----
+------------------------------------------------------------------------
 
 ## 4. Targeted Learning (AIPW)
 
@@ -248,10 +247,10 @@ tibble(
 )
 ```
 
-* All three methods show a population-level absolute risk reduction of approximately **1%** (ATE $\approx -0.01$).
-* The IPW and G-formula methods yield individualized risk models, whereas AIPW provides a doubly robust validation of the overall population-level treatment effect.
+-   All three methods show a population-level absolute risk reduction of approximately **1%** (ATE $\approx -0.01$).
+-   The IPW and G-formula methods yield individualized risk models, whereas AIPW provides a doubly robust validation of the overall population-level treatment effect.
 
----
+------------------------------------------------------------------------
 
 ## 5. Counterfactual Evaluation
 
@@ -279,9 +278,9 @@ tibble(
 )
 ```
 
-* **Findings**: The IPW outcome model (which excludes `steno_prs` at prediction time but was trained using propensity weights) achieves the lowest Brier score (**0.0317**), outperforming the baseline Steno model. This demonstrates that models explicitly adjusted for treatment confounding perform better when predicting risk under intervention.
+-   **Findings**: The IPW outcome model (which excludes `steno_prs` at prediction time but was trained using propensity weights) achieves the lowest Brier score (**0.0317**), outperforming the baseline Steno model. This demonstrates that models explicitly adjusted for treatment confounding perform better when predicting risk under intervention.
 
----
+------------------------------------------------------------------------
 
 ### Counterfactual Calibration
 
@@ -350,10 +349,11 @@ ggplot(cal_plot_data, aes(x = predicted, y = observed, color = Population)) +
 ```
 
 #### Calibration Analysis:
-1. **Predictive Model (Steno)**: This model is well-calibrated for the **Observed** population (red line is near the diagonal). However, in the **Counterfactual** population where everyone receives statins (blue line), the model severely overestimates the risk of CVD. This is because it fails to account for the risk-reducing effect of the statin initiation.
-2. **Causal Model (G-Formula)**: This model is poorly calibrated for the **Observed** population (red line deviates) because it predicts risk *under the intervention of statins*, but many patients in the observed cohort were untreated. Crucially, in the **Counterfactual** population (blue line), the model is perfectly calibrated, proving its validity for interventional decision support.
 
----
+1.  **Predictive Model (Steno)**: This model is well-calibrated for the **Observed** population (red line is near the diagonal). However, in the **Counterfactual** population where everyone receives statins (blue line), the model severely overestimates the risk of CVD. This is because it fails to account for the risk-reducing effect of the statin initiation.
+2.  **Causal Model (G-Formula)**: This model is poorly calibrated for the **Observed** population (red line deviates) because it predicts risk *under the intervention of statins*, but many patients in the observed cohort were untreated. Crucially, in the **Counterfactual** population (blue line), the model is perfectly calibrated, proving its validity for interventional decision support.
+
+------------------------------------------------------------------------
 
 ## 6. Deployment: Causal Projections
 
@@ -392,16 +392,14 @@ summary(deploy$ite)
 ```
 
 ### Clinical Translation:
-The Average Treatment Effect in this cohort is around **1%** risk reduction, but the ITE distribution reveals significant heterogeneity:
-* Patients with an ITE close to **0** derive almost no benefit from statins.
-* A subset of patients achieves an absolute risk reduction of **2% to 3%** or more.
-* A clinical decision rule can be established to recommend statins only if $\text{ITE}_i \ge \text{threshold}$ (e.g., $1\%$), optimizing treatment benefits while minimizing side effects and polypharmacy.
 
----
+The Average Treatment Effect in this cohort is around **1%** risk reduction, but the ITE distribution reveals significant heterogeneity: \* Patients with an ITE close to **0** derive almost no benefit from statins. \* A subset of patients achieves an absolute risk reduction of **2% to 3%** or more. \* A clinical decision rule can be established to recommend statins only if $\text{ITE}_i \ge \text{threshold}$ (e.g., $1\%$), optimizing treatment benefits while minimizing side effects and polypharmacy.
+
+------------------------------------------------------------------------
 
 ## Conclusions
 
-1. **Confounding Bias**: Standard predictive models learn biased associations due to confounding by indication and cannot guide clinical treatment decisions.
-2. **Causal Estimation**: Separating predictors into confounders ($L$) and predictors ($P$) allows the G-formula and IPW to estimate unbiased interventional risks.
-3. **Causal Validation**: Counterfactual Brier scores and weighted calibration curves are essential to validate that causal models perform correctly under the intended treatment scenarios.
-4. **Precision Medicine**: Projecting the Individual Treatment Effect (ITE) enables personalized decision support, targeting treatment to patients who will benefit the most.
+1.  **Confounding Bias**: Standard predictive models learn biased associations due to confounding by indication and cannot guide clinical treatment decisions.
+2.  **Causal Estimation**: Separating predictors into confounders ($L$) and predictors ($P$) allows the G-formula and IPW to estimate unbiased interventional risks.
+3.  **Causal Validation**: Counterfactual Brier scores and weighted calibration curves are essential to validate that causal models perform correctly under the intended treatment scenarios.
+4.  **Precision Medicine**: Projecting the Individual Treatment Effect (ITE) enables personalized decision support, targeting treatment to patients who will benefit the most.
