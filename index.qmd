@@ -20,7 +20,9 @@ david \[dot\] redek \[at\] gmail \[dot\] com
 
 I am a data scientist based in Copenhagen.
 
-## Publications
+## Publications and preprints
+
+[One-step Outcome Imputation: An Alternative to Multiple Imputation](https://arxiv.org/abs/2606.07174)
 
 [Can knowledge of the spatial field trend improve phenotypic prediction accuracy through informed choice of experimental design?](https://link.springer.com/article/10.1007/s10681-025-03608-2)
 
