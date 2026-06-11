@@ -1,6 +1,0 @@
-[
-  {
-    "key": "shift+enter",
-    "command": "macros.executeLineAndMove"
-  }
-]
