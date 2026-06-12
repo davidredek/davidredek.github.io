@@ -4,7 +4,7 @@ title: "Research"
 
 ## Preprints
 
-<ul>
+<ul class="research-list">
   <li>
     <strong><a href="https://arxiv.org/abs/2606.07174" target="_blank">One-step Outcome Imputation: An Alternative to Multiple Imputation</a></strong><br />
     A. Nordland, K. K. Holst, <strong>D. Redek</strong>, C. B. Pipper, and A. T. Iversen<br />
@@ -16,7 +16,7 @@ title: "Research"
 
 ## Published
 
-<ul>
+<ul class="research-list">
   <li>
     <strong><a href="https://link.springer.com/article/10.1007/s10681-025-03608-2" target="_blank">Can knowledge of the spatial field trend improve phenotypic prediction accuracy through informed choice of experimental design?</a></strong><br />
     <strong>D. Redek</strong>, J. R. Baalkilde, R. Hjortshøj, J. A. Schatz-Jakobsen, and S. M. Jensen<br />
@@ -29,7 +29,7 @@ title: "Research"
 
 ## Theses
 
-<ul>
+<ul class="research-list">
   <li>
     <strong><a href="Publications/main.pdf" target="_blank">Profile likelihood confidence intervals for derived parameters in dose-response models without reparameterization</a></strong><br />
     MSc. Thesis in Statistics, University of Copenhagen, 2023<br />

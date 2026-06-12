@@ -40,4 +40,7 @@ li {
   padding-bottom: 0.1rem !important;
 }
 
-
+.research-list {
+  list-style-type: none !important;
+  padding-left: 0 !important;
+}

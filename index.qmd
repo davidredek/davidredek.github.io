@@ -14,16 +14,16 @@ My current work revolves around semi-parametric causal inference and model-free,
 
 ## Experience
 
-**Statistician** \
+**Statistician**\
 Novo Nordisk A/S \| Copenhagen, Denmark\
 Jan 2024 -- Present
 
-**Research Assistant** \
-University of Copenhagen \| Copenhagen, Denmark \
+**Research Assistant**\
+University of Copenhagen \| Copenhagen, Denmark\
 Nov 2021 -- Nov 2023
 
-**Data Scientist** \
-CGI Inc. \| Prague, Czech Republic \
+**Data Scientist**\
+CGI Inc. \| Prague, Czech Republic\
 July 2020 -- Nov 2020
 
 **Data Engineer**\
@@ -32,9 +32,13 @@ June 2017 -- Sep 2018
 
 ## Education
 
-**MSc. in Statistics** \| University of Copenhagen \| Copenhagen, Denmark \| Sep 2021 -- Nov 2023
+**MSc. in Statistics** \
+University of Copenhagen \| Copenhagen, Denmark \
+Sep 2021 -- Nov 2023
 
-**Bc. in Mathematics** \| Charles University \| Prague, Czech Republic \| Oct 2017 -- June 2021
+**Bc. in Mathematics** \
+Charles University \| Prague, Czech Republic \
+Oct 2017 -- June 2021
 
 ```{=html}
 <style>
