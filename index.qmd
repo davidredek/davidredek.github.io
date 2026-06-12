@@ -8,26 +8,38 @@ about:
   image-width: 17em
 ---
 
-I hold a Master's degree in Statistics with a strong background in mathematics and experience in academia and industry.
+Hi, I'm David, and I am a statistician in R&D at Novo Nordisk.
+
+My current work revolves around semi-parametric causal inference and model-free, doubly robust targeted learning, with applications to clinical trials and broader healthcare data, as well as related imputation methods. Beyond biostatistics, I am interested in all areas of machine learning and enjoy exploring applications in econometrics and finance.
 
 ## Experience
 
-**Statistician** | Novo Nordisk A/S | Copenhagen, Denmark | Jan 2024 -- Present
+**Statistician** \
+Novo Nordisk A/S \| Copenhagen, Denmark\
+Jan 2024 -- Present
 
-**Research Assistant** | University of Copenhagen | Copenhagen, Denmark | Nov 2021 -- Nov 2023
+**Research Assistant** \
+University of Copenhagen \| Copenhagen, Denmark \
+Nov 2021 -- Nov 2023
 
-**Data Scientist** | CGI Inc. | Prague, Czech Republic | July 2020 -- Nov 2020
+**Data Scientist** \
+CGI Inc. \| Prague, Czech Republic \
+July 2020 -- Nov 2020
 
-**Data Engineer** | Woodler, s.r.o. | Brno, Czech Republic | June 2017 -- Sep 2018
+**Data Engineer**\
+Woodler, s.r.o. \| Brno, Czech Republic\
+June 2017 -- Sep 2018
 
 ## Education
 
-**MSc. in Statistics** | University of Copenhagen | Copenhagen, Denmark | Sep 2021 -- Nov 2023
+**MSc. in Statistics** \| University of Copenhagen \| Copenhagen, Denmark \| Sep 2021 -- Nov 2023
 
-**Bc. in Mathematics** | Charles University | Prague, Czech Republic | Oct 2017 -- June 2021
+**Bc. in Mathematics** \| Charles University \| Prague, Czech Republic \| Oct 2017 -- June 2021
 
+```{=html}
 <style>
 .navbar-brand {
   visibility: hidden !important;
 }
 </style>
+```

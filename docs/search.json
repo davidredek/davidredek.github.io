@@ -14,11 +14,11 @@
     "text": "One-step Outcome Imputation: An Alternative to Multiple Imputation A. Nordland, K. K. Holst, D. Redek, C. B. Pipper, and A. T. Iversen  Missing outcomes in randomized controlled trials are often handled by multiple imputation (MI). Rubin’s rules are routinely used to estimate standard errors but can fail to provide valid standard error estimates for some commonly used procedures, such as reference-based imputation. We propose a one-step alternative by explicitly targeting the treatment effect implied by a given imputation model and constructing an efficient one-step estimator for that treatment effect via its influence function. Unlike Rubin’s rules, this approach yields asymptotically valid inference. Moreover, the proposed method circumvents the stochastic component and computational burden of MI. We illustrate the approach with examples spanning a range of imputation models, including reference-based imputation and intercurrent-event-dependent imputation."
   },
   {
-    "objectID": "research.html#peer-reviewed-publications",
-    "href": "research.html#peer-reviewed-publications",
+    "objectID": "research.html#published",
+    "href": "research.html#published",
     "title": "Research",
-    "section": "Peer-reviewed Publications",
-    "text": "Peer-reviewed Publications\n\n\nCan knowledge of the spatial field trend improve phenotypic prediction accuracy through informed choice of experimental design? D. Redek, J. R. Baalkilde, R. Hjortshøj, J. A. Schatz-Jakobsen, and S. M. Jensen Euphytica (2025) 221:155  Environmental variation is an important factor in crop yield variability, especially in large agricultural experiments such as breeding trials. This study explores whether prior knowledge of the spatial field trends can enhance phenotypic prediction accuracy by choice of experimental design and statistical analysis. Using data from three breeding trials and a simulation study with eight field trends, we compared five experimental designs and six statistical models. The results showed that combining field trend knowledge with an appropriate analysis strategy can improve predictive performance. There was no universally optimal design; but among the designs considered, the row-column design performed best for most field trends with a high degree of spatial variation. Statistical models correcting for spatial variation consistently reduced bias and increased correlation between predicted and true yield. This work emphasizes the need to integrate spatial information in the decision of both the design and analysis of breeding trials to boost prediction accuracy."
+    "section": "Published",
+    "text": "Published\n\n\nCan knowledge of the spatial field trend improve phenotypic prediction accuracy through informed choice of experimental design? D. Redek, J. R. Baalkilde, R. Hjortshøj, J. A. Schatz-Jakobsen, and S. M. Jensen Euphytica (2025) 221:155  Environmental variation is an important factor in crop yield variability, especially in large agricultural experiments such as breeding trials. This study explores whether prior knowledge of the spatial field trends can enhance phenotypic prediction accuracy by choice of experimental design and statistical analysis. Using data from three breeding trials and a simulation study with eight field trends, we compared five experimental designs and six statistical models. The results showed that combining field trend knowledge with an appropriate analysis strategy can improve predictive performance. There was no universally optimal design; but among the designs considered, the row-column design performed best for most field trends with a high degree of spatial variation. Statistical models correcting for spatial variation consistently reduced bias and increased correlation between predicted and true yield. This work emphasizes the need to integrate spatial information in the decision of both the design and analysis of breeding trials to boost prediction accuracy."
   },
   {
     "objectID": "research.html#theses",
@@ -32,7 +32,7 @@
     "href": "index.html",
     "title": "David Redek",
     "section": "",
-    "text": "I hold a Master’s degree in Statistics with a strong background in mathematics and experience in academia and industry."
+    "text": "Hi, I’m David, and I am a statistician in R&D at Novo Nordisk.\nMy current work revolves around semi-parametric causal inference and model-free, doubly robust targeted learning, with applications to clinical trials and broader healthcare data, as well as related imputation methods. Beyond biostatistics, I am interested in all areas of machine learning and enjoy exploring applications in econometrics and finance."
   },
   {
     "objectID": "index.html#experience",
