@@ -3,39 +3,31 @@ title: "David Redek"
 toc: false
 about: 
   template: solana
+  image: images/profile.jpg
   image-shape: round
   image-width: 17em
-  # links:
-  #   - icon: linkedin
-  #     text: Linked
-  #     href: https://www.linkedin.com/in/david-redek/
-  #   - icon: github
-  #     text: GitHub
-  #     href: https://github.com/davidredek
 ---
 
-david \[dot\] redek \[at\] gmail \[dot\] com
-
-## Bio
-
-I am a data scientist based in Copenhagen.
-
-## Publications and preprints
-
-[One-step Outcome Imputation: An Alternative to Multiple Imputation](https://arxiv.org/abs/2606.07174)
-
-[Can knowledge of the spatial field trend improve phenotypic prediction accuracy through informed choice of experimental design?](https://link.springer.com/article/10.1007/s10681-025-03608-2)
+I hold a Master's degree in Statistics with a strong background in mathematics and experience in academia and industry.
 
 ## Experience
 
-**Statistician** \| Novo Nordisk A/S \| Copenhagen, Denmark \| Jan 2024 -- Present
+**Statistician** | Novo Nordisk A/S | Copenhagen, Denmark | Jan 2024 -- Present
 
-**Research Assistant** \| University of Copenhagen \| Copenhagen, Denmark \| Nov 2021 -- Nov 2023
+**Research Assistant** | University of Copenhagen | Copenhagen, Denmark | Nov 2021 -- Nov 2023
 
-**Data Scientist** \| CGI Inc. \| Prague, Czech Republic \| July 2020 -- Nov 2020
+**Data Scientist** | CGI Inc. | Prague, Czech Republic | July 2020 -- Nov 2020
+
+**Data Engineer** | Woodler, s.r.o. | Brno, Czech Republic | June 2017 -- Sep 2018
 
 ## Education
 
-**MSc. Statistics** \| University of Copenhagen \| Copenhagen, Denmark \| 2021 -- 2023
+**MSc. in Statistics** | University of Copenhagen | Copenhagen, Denmark | Sep 2021 -- Nov 2023
 
-**Bc. Mathematics** \| Charles University \| Prague, Czech Republic \| 2017 -- 2021
+**Bc. in Mathematics** | Charles University | Prague, Czech Republic | Oct 2017 -- June 2021
+
+<style>
+.navbar-brand {
+  visibility: hidden !important;
+}
+</style>

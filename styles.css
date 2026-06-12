@@ -1,1 +1,43 @@
 /* css styles */
+
+.abstract {
+  display: block;
+  font-size: 0.9em;
+  color: #bbbbbb;
+  margin-top: 0.35em;
+  margin-bottom: 1.25em;
+  line-height: 1.5;
+  font-style: italic;
+}
+
+ul {
+  padding-left: 1.25rem;
+}
+
+li {
+  margin-bottom: 1.25rem;
+}
+
+/* Fix navbar background, border, shadows, and height (making it even narrower) */
+.navbar {
+  background-color: var(--bs-body-bg) !important;
+  border-bottom: 1px solid #444444 !important;
+  box-shadow: none !important;
+  padding-top: 0.1rem !important;
+  padding-bottom: 0.1rem !important;
+}
+
+/* Match navbar brand/title font size and weight to the tabs */
+.navbar-brand, .navbar-title {
+  font-size: 0.9rem !important;
+  font-weight: 500 !important;
+  padding-top: 0.1rem !important;
+  padding-bottom: 0.1rem !important;
+}
+
+.navbar .nav-link {
+  padding-top: 0.1rem !important;
+  padding-bottom: 0.1rem !important;
+}
+
+

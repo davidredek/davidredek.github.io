@@ -1,0 +1,44 @@
+---
+title: "Research"
+---
+
+## Preprints
+
+<ul>
+  <li>
+    <strong><a href="https://arxiv.org/abs/2606.07174" target="_blank">One-step Outcome Imputation: An Alternative to Multiple Imputation</a></strong><br />
+    A. Nordland, K. K. Holst, <strong>D. Redek</strong>, C. B. Pipper, and A. T. Iversen<br />
+    <em class="abstract">
+      Missing outcomes in randomized controlled trials are often handled by multiple imputation (MI). Rubin's rules are routinely used to estimate standard errors but can fail to provide valid standard error estimates for some commonly used procedures, such as reference-based imputation. We propose a one-step alternative by explicitly targeting the treatment effect implied by a given imputation model and constructing an efficient one-step estimator for that treatment effect via its influence function. Unlike Rubin's rules, this approach yields asymptotically valid inference. Moreover, the proposed method circumvents the stochastic component and computational burden of MI. We illustrate the approach with examples spanning a range of imputation models, including reference-based imputation and intercurrent-event-dependent imputation.
+    </em>
+  </li>
+</ul>
+
+## Peer-reviewed Publications
+
+<ul>
+  <li>
+    <strong><a href="https://link.springer.com/article/10.1007/s10681-025-03608-2" target="_blank">Can knowledge of the spatial field trend improve phenotypic prediction accuracy through informed choice of experimental design?</a></strong><br />
+    <strong>D. Redek</strong>, J. R. Baalkilde, R. Hjortshøj, J. A. Schatz-Jakobsen, and S. M. Jensen<br />
+    <em>Euphytica (2025) 221:155</em><br />
+    <em class="abstract">
+      Environmental variation is an important factor in crop yield variability, especially in large agricultural experiments such as breeding trials. This study explores whether prior knowledge of the spatial field trends can enhance phenotypic prediction accuracy by choice of experimental design and statistical analysis. Using data from three breeding trials and a simulation study with eight field trends, we compared five experimental designs and six statistical models. The results showed that combining field trend knowledge with an appropriate analysis strategy can improve predictive performance. There was no universally optimal design; but among the designs considered, the row-column design performed best for most field trends with a high degree of spatial variation. Statistical models correcting for spatial variation consistently reduced bias and increased correlation between predicted and true yield. This work emphasizes the need to integrate spatial information in the decision of both the design and analysis of breeding trials to boost prediction accuracy.
+    </em>
+  </li>
+</ul>
+
+## Theses
+
+<ul>
+  <li>
+    <strong>Profile Likelihood Confidence Intervals for Dose-Response models</strong><br />
+    MSc. Thesis in Statistics, University of Copenhagen, 2023<br />
+  </li>
+  <li>
+    <strong><a href="https://dspace.cuni.cz/bitstream/handle/20.500.11956/127921/130308341.pdf?sequence=1" target="_blank">Truncated Data</a></strong><br />
+    Bc. Thesis in Mathematics, Charles University, 2021<br />
+    <em class="abstract">
+      This thesis deals with truncated distributions. Firstly, the case of the truncated normal distribution is analyzed in detail. Two estimation methods are described – method of moments and maximum likelihood – together with the discussion of their properties and confidence region construction. A more advanced method – Bayes estimator – is briefly presented. Secondly, the truncated gamma distribution is analyzed, however, in less detail than the normal case. The theoretical part is closed with a method for estimating truncation boundaries when not even those are known. Throughout the thesis, results from multiple articles by various authors are summarized and presented in a unified notation. The numerical part deals with the analysis of a real dataset, describing the height of soldiers in the U.S. Army. The built theory is transformed into R code and executed, indicating the correctness of our theoretical results.
+    </em>
+  </li>
+</ul>

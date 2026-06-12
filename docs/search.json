@@ -1,44 +1,58 @@
 [
   {
-    "objectID": "projects.html",
-    "href": "projects.html",
-    "title": "Projects",
+    "objectID": "research.html",
+    "href": "research.html",
+    "title": "Research",
     "section": "",
-    "text": "No matching items"
+    "text": "One-step Outcome Imputation: An Alternative to Multiple Imputation A. Nordland, K. K. Holst, D. Redek, C. B. Pipper, and A. T. Iversen  Missing outcomes in randomized controlled trials are often handled by multiple imputation (MI). Rubin’s rules are routinely used to estimate standard errors but can fail to provide valid standard error estimates for some commonly used procedures, such as reference-based imputation. We propose a one-step alternative by explicitly targeting the treatment effect implied by a given imputation model and constructing an efficient one-step estimator for that treatment effect via its influence function. Unlike Rubin’s rules, this approach yields asymptotically valid inference. Moreover, the proposed method circumvents the stochastic component and computational burden of MI. We illustrate the approach with examples spanning a range of imputation models, including reference-based imputation and intercurrent-event-dependent imputation."
+  },
+  {
+    "objectID": "research.html#preprints",
+    "href": "research.html#preprints",
+    "title": "Research",
+    "section": "",
+    "text": "One-step Outcome Imputation: An Alternative to Multiple Imputation A. Nordland, K. K. Holst, D. Redek, C. B. Pipper, and A. T. Iversen  Missing outcomes in randomized controlled trials are often handled by multiple imputation (MI). Rubin’s rules are routinely used to estimate standard errors but can fail to provide valid standard error estimates for some commonly used procedures, such as reference-based imputation. We propose a one-step alternative by explicitly targeting the treatment effect implied by a given imputation model and constructing an efficient one-step estimator for that treatment effect via its influence function. Unlike Rubin’s rules, this approach yields asymptotically valid inference. Moreover, the proposed method circumvents the stochastic component and computational burden of MI. We illustrate the approach with examples spanning a range of imputation models, including reference-based imputation and intercurrent-event-dependent imputation."
+  },
+  {
+    "objectID": "research.html#peer-reviewed-publications",
+    "href": "research.html#peer-reviewed-publications",
+    "title": "Research",
+    "section": "Peer-reviewed Publications",
+    "text": "Peer-reviewed Publications\n\n\nCan knowledge of the spatial field trend improve phenotypic prediction accuracy through informed choice of experimental design? D. Redek, J. R. Baalkilde, R. Hjortshøj, J. A. Schatz-Jakobsen, and S. M. Jensen Euphytica (2025) 221:155  Environmental variation is an important factor in crop yield variability, especially in large agricultural experiments such as breeding trials. This study explores whether prior knowledge of the spatial field trends can enhance phenotypic prediction accuracy by choice of experimental design and statistical analysis. Using data from three breeding trials and a simulation study with eight field trends, we compared five experimental designs and six statistical models. The results showed that combining field trend knowledge with an appropriate analysis strategy can improve predictive performance. There was no universally optimal design; but among the designs considered, the row-column design performed best for most field trends with a high degree of spatial variation. Statistical models correcting for spatial variation consistently reduced bias and increased correlation between predicted and true yield. This work emphasizes the need to integrate spatial information in the decision of both the design and analysis of breeding trials to boost prediction accuracy."
+  },
+  {
+    "objectID": "research.html#theses",
+    "href": "research.html#theses",
+    "title": "Research",
+    "section": "Theses",
+    "text": "Theses\n\n\nProfile Likelihood Confidence Intervals for Dose-Response models MSc. Thesis in Statistics, University of Copenhagen, 2023\n\n\nTruncated Data Bc. Thesis in Mathematics, Charles University, 2021  This thesis deals with truncated distributions. Firstly, the case of the truncated normal distribution is analyzed in detail. Two estimation methods are described – method of moments and maximum likelihood – together with the discussion of their properties and confidence region construction. A more advanced method – Bayes estimator – is briefly presented. Secondly, the truncated gamma distribution is analyzed, however, in less detail than the normal case. The theoretical part is closed with a method for estimating truncation boundaries when not even those are known. Throughout the thesis, results from multiple articles by various authors are summarized and presented in a unified notation. The numerical part deals with the analysis of a real dataset, describing the height of soldiers in the U.S. Army. The built theory is transformed into R code and executed, indicating the correctness of our theoretical results."
   },
   {
     "objectID": "index.html",
     "href": "index.html",
     "title": "David Redek",
     "section": "",
-    "text": "david [dot] redek [at] gmail [dot] com"
-  },
-  {
-    "objectID": "index.html#bio",
-    "href": "index.html#bio",
-    "title": "David Redek",
-    "section": "Bio",
-    "text": "Bio\nI am a data scientist based in Copenhagen."
-  },
-  {
-    "objectID": "index.html#publications-and-preprints",
-    "href": "index.html#publications-and-preprints",
-    "title": "David Redek",
-    "section": "Publications and preprints",
-    "text": "Publications and preprints\nOne-step Outcome Imputation: An Alternative to Multiple Imputation\nCan knowledge of the spatial field trend improve phenotypic prediction accuracy through informed choice of experimental design?"
+    "text": "I hold a Master’s degree in Statistics with a strong background in mathematics and experience in academia and industry."
   },
   {
     "objectID": "index.html#experience",
     "href": "index.html#experience",
     "title": "David Redek",
     "section": "Experience",
-    "text": "Experience\nStatistician | Novo Nordisk A/S | Copenhagen, Denmark | Jan 2024 – Present\nResearch Assistant | University of Copenhagen | Copenhagen, Denmark | Nov 2021 – Nov 2023\nData Scientist | CGI Inc. | Prague, Czech Republic | July 2020 – Nov 2020"
+    "text": "Experience\nStatistician | Novo Nordisk A/S | Copenhagen, Denmark | Jan 2024 – Present\nResearch Assistant | University of Copenhagen | Copenhagen, Denmark | Nov 2021 – Nov 2023\nData Scientist | CGI Inc. | Prague, Czech Republic | July 2020 – Nov 2020\nData Engineer | Woodler, s.r.o. | Brno, Czech Republic | June 2017 – Sep 2018"
   },
   {
     "objectID": "index.html#education",
     "href": "index.html#education",
     "title": "David Redek",
     "section": "Education",
-    "text": "Education\nMSc. Statistics | University of Copenhagen | Copenhagen, Denmark | 2021 – 2023\nBc. Mathematics | Charles University | Prague, Czech Republic | 2017 – 2021"
+    "text": "Education\nMSc. in Statistics | University of Copenhagen | Copenhagen, Denmark | Sep 2021 – Nov 2023\nBc. in Mathematics | Charles University | Prague, Czech Republic | Oct 2017 – June 2021"
+  },
+  {
+    "objectID": "projects.html",
+    "href": "projects.html",
+    "title": "Fun Projects",
+    "section": "",
+    "text": "No matching items"
   }
 ]

@@ -8,10 +8,13 @@ website:
   title: "David Redek"
   search: false
   navbar:
+    fixed: true
     left:
       - text: about
         href: index.qmd
-      - text: projects
+      - text: research
+        href: research.qmd
+      - text: fun projects
         href: projects.qmd
     right:
       - icon: github
@@ -21,13 +24,10 @@ website:
 
 format:
   html:
-    theme: cosmo
-    # Add this section to override colors
-    theme-rules:
-      - navbar-bg: "#2c3e50" # A dark slate gray
-      - navbar-fg: "#ffffff" # White text
+    theme: darkly
     css: styles.css
     toc: true
+    headroom: false
 
 editor: visual
 

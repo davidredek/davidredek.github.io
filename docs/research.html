@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>Fun Projects – David Redek</title>
+<title>Research – David Redek</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -25,8 +25,6 @@ ul.task-list li input[type="checkbox"] {
 
 <script src="site_libs/quarto-nav/quarto-nav.js"></script>
 <script src="site_libs/quarto-nav/headroom.min.js"></script>
-<script src="site_libs/quarto-listing/list.min.js"></script>
-<script src="site_libs/quarto-listing/quarto-listing.js"></script>
 <script src="site_libs/clipboard/clipboard.min.js"></script>
 <script src="site_libs/quarto-html/quarto.js" type="module"></script>
 <script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
@@ -54,65 +52,7 @@ ul.task-list li input[type="checkbox"] {
     "search-label": "Search"
   }
 }</script>
-<script>
 
-  window.document.addEventListener("DOMContentLoaded", function (_event) {
-    const listingTargetEl = window.document.querySelector('#listing-listing .list');
-    if (!listingTargetEl) {
-      // No listing discovered, do not attach.
-      return; 
-    }
-
-    const options = {
-      valueNames: ['listing-categories',{ data: ['index'] },{ data: ['categories'] },{ data: ['listing-date-sort'] },{ data: ['listing-file-modified-sort'] }],
-      
-      searchColumns: ["listing-categories"],
-    };
-
-    window['quarto-listings'] = window['quarto-listings'] || {};
-    window['quarto-listings']['listing-listing'] = new List('listing-listing', options);
-
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  });
-
-  window.addEventListener('hashchange',() => {
-    if (window['quarto-listing-loaded']) {
-      window['quarto-listing-loaded']();
-    }
-  })
-  </script>
-
-  <script src="https://cdnjs.cloudflare.com/polyfill/v3/polyfill.min.js?features=es6"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml-full.js" type="text/javascript"></script>
-
-<script type="text/javascript">
-const typesetMath = (el) => {
-  if (window.MathJax) {
-    // MathJax Typeset
-    window.MathJax.typeset([el]);
-  } else if (window.katex) {
-    // KaTeX Render
-    var mathElements = el.getElementsByClassName("math");
-    var macros = [];
-    for (var i = 0; i < mathElements.length; i++) {
-      var texText = mathElements[i].firstChild;
-      if (mathElements[i].tagName == "SPAN" && texText && texText.data) {
-        window.katex.render(texText.data, mathElements[i], {
-          displayMode: mathElements[i].classList.contains('display'),
-          throwOnError: false,
-          macros: macros,
-          fleqn: false
-        });
-      }
-    }
-  }
-}
-window.Quarto = {
-  typesetMath
-};
-</script>
 
 <link rel="stylesheet" href="styles.css">
 </head>
@@ -138,11 +78,11 @@ window.Quarto = {
 <span class="menu-text">about</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link" href="./research.html"> 
+    <a class="nav-link active" href="./research.html" aria-current="page"> 
 <span class="menu-text">research</span></a>
   </li>  
   <li class="nav-item">
-    <a class="nav-link active" href="./projects.html" aria-current="page"> 
+    <a class="nav-link" href="./projects.html"> 
 <span class="menu-text">fun projects</span></a>
   </li>  
 </ul>
@@ -169,14 +109,22 @@ window.Quarto = {
 <!-- sidebar -->
 <!-- margin-sidebar -->
     <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
-        
-    <h5 class="quarto-listing-category-title">Categories</h5><div class="quarto-listing-category category-default"><div class="category" data-category="">All <span class="quarto-category-count">(0)</span></div></div></div>
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#preprints" id="toc-preprints" class="nav-link active" data-scroll-target="#preprints">Preprints</a></li>
+  <li><a href="#peer-reviewed-publications" id="toc-peer-reviewed-publications" class="nav-link" data-scroll-target="#peer-reviewed-publications">Peer-reviewed Publications</a></li>
+  <li><a href="#theses" id="toc-theses" class="nav-link" data-scroll-target="#theses">Theses</a></li>
+  </ul>
+</nav>
+    </div>
 <!-- main -->
 <main class="content" id="quarto-document-content">
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Fun Projects</h1>
+<h1 class="title">Research</h1>
 </div>
 
 
@@ -193,16 +141,37 @@ window.Quarto = {
 </header>
 
 
+<section id="preprints" class="level2">
+<h2 class="anchored" data-anchor-id="preprints">Preprints</h2>
+<ul>
+<li>
+<strong><a href="https://arxiv.org/abs/2606.07174" target="_blank">One-step Outcome Imputation: An Alternative to Multiple Imputation</a></strong><br> A. Nordland, K. K. Holst, <strong>D. Redek</strong>, C. B. Pipper, and A. T. Iversen<br> <em class="abstract"> Missing outcomes in randomized controlled trials are often handled by multiple imputation (MI). Rubin’s rules are routinely used to estimate standard errors but can fail to provide valid standard error estimates for some commonly used procedures, such as reference-based imputation. We propose a one-step alternative by explicitly targeting the treatment effect implied by a given imputation model and constructing an efficient one-step estimator for that treatment effect via its influence function. Unlike Rubin’s rules, this approach yields asymptotically valid inference. Moreover, the proposed method circumvents the stochastic component and computational burden of MI. We illustrate the approach with examples spanning a range of imputation models, including reference-based imputation and intercurrent-event-dependent imputation. </em>
+</li>
+</ul>
+</section>
+<section id="peer-reviewed-publications" class="level2">
+<h2 class="anchored" data-anchor-id="peer-reviewed-publications">Peer-reviewed Publications</h2>
+<ul>
+<li>
+<strong><a href="https://link.springer.com/article/10.1007/s10681-025-03608-2" target="_blank">Can knowledge of the spatial field trend improve phenotypic prediction accuracy through informed choice of experimental design?</a></strong><br> <strong>D. Redek</strong>, J. R. Baalkilde, R. Hjortshøj, J. A. Schatz-Jakobsen, and S. M. Jensen<br> <em>Euphytica (2025) 221:155</em><br> <em class="abstract"> Environmental variation is an important factor in crop yield variability, especially in large agricultural experiments such as breeding trials. This study explores whether prior knowledge of the spatial field trends can enhance phenotypic prediction accuracy by choice of experimental design and statistical analysis. Using data from three breeding trials and a simulation study with eight field trends, we compared five experimental designs and six statistical models. The results showed that combining field trend knowledge with an appropriate analysis strategy can improve predictive performance. There was no universally optimal design; but among the designs considered, the row-column design performed best for most field trends with a high degree of spatial variation. Statistical models correcting for spatial variation consistently reduced bias and increased correlation between predicted and true yield. This work emphasizes the need to integrate spatial information in the decision of both the design and analysis of breeding trials to boost prediction accuracy. </em>
+</li>
+</ul>
+</section>
+<section id="theses" class="level2">
+<h2 class="anchored" data-anchor-id="theses">Theses</h2>
+<ul>
+<li>
+<strong>Profile Likelihood Confidence Intervals for Dose-Response models</strong><br> MSc. Thesis in Statistics, University of Copenhagen, 2023<br>
+</li>
+<li>
+<strong><a href="https://dspace.cuni.cz/bitstream/handle/20.500.11956/127921/130308341.pdf?sequence=1" target="_blank">Truncated Data</a></strong><br> Bc. Thesis in Mathematics, Charles University, 2021<br> <em class="abstract"> This thesis deals with truncated distributions. Firstly, the case of the truncated normal distribution is analyzed in detail. Two estimation methods are described – method of moments and maximum likelihood – together with the discussion of their properties and confidence region construction. A more advanced method – Bayes estimator – is briefly presented. Secondly, the truncated gamma distribution is analyzed, however, in less detail than the normal case. The theoretical part is closed with a method for estimating truncation boundaries when not even those are known. Throughout the thesis, results from multiple articles by various authors are summarized and presented in a unified notation. The numerical part deals with the analysis of a real dataset, describing the height of soldiers in the U.S. Army. The built theory is transformed into R code and executed, indicating the correctness of our theoretical results. </em>
+</li>
+</ul>
 
 
+</section>
 
-
-<div class="quarto-listing quarto-listing-container-default" id="listing-listing">
-<div class="list quarto-listing-default">
-
-</div>
-<div class="listing-no-matching d-none">No matching items</div>
-</div></main> <!-- /main -->
+</main> <!-- /main -->
 <script id="quarto-html-after-body" type="application/javascript">
   window.document.addEventListener("DOMContentLoaded", function (event) {
     const icon = "";
