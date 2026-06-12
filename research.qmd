@@ -31,8 +31,11 @@ title: "Research"
 
 <ul>
   <li>
-    <strong>Profile Likelihood Confidence Intervals for Dose-Response models</strong><br />
+    <strong><a href="Publications/main.pdf" target="_blank">Profile likelihood confidence intervals for derived parameters in dose-response models without reparameterization</a></strong><br />
     MSc. Thesis in Statistics, University of Copenhagen, 2023<br />
+    <em class="abstract">
+      This master thesis introduces a novel method for constructing confidence intervals for derived parameters of dose-response models. Utilizing the profile likelihood method with gradient information offers a reliable and efficient approach without the need for reparameterization. Through simulation studies, the thesis evaluates the performance of this method compared to traditional approaches used in fields like drug development and toxicology.
+    </em>
   </li>
   <li>
     <strong><a href="https://dspace.cuni.cz/bitstream/handle/20.500.11956/127921/130308341.pdf?sequence=1" target="_blank">Truncated Data</a></strong><br />
