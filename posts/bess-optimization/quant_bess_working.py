@@ -1,18 +1,58 @@
-import requests 
-import pandas as pd
-import polars as pl
+# %%
+"""
+Quantitative BESS Optimization and Spot Price Forecasting Pipeline
+Day-Ahead Bidding Simulation on the Danish Power Market (DK2 Area)
+
+Author: David Redeck
+"""
+
+import sys
+import time
+import requests
 import numpy as np
-from statsmodels.tsa.arima.model import ARIMA
-from sklearn.metrics import mean_absolute_error
-from sklearn.model_selection import train_test_split
-from plotnine import ggplot, aes, geom_line, theme_bw, geom_point, theme_minimal, labs, scale_y_continuous, facet_wrap
-import matplotlib.pyplot as plt
+import polars as pl
+from datetime import datetime
+import statsmodels.api as sm
+from statsmodels.tsa.statespace.sarimax import SARIMAX
+import pulp
 import matplotlib
 
+# Uncomment the line below if you are building the Quarto website in headless mode
+# matplotlib.use('Agg')
+from plotnine import *
 
-def fetch_dk2_spot_prices(start_date: str, end_date: str) -> pd.DataFrame:
+# Fix Windows console encoding for Polars table drawings
+sys.stdout.reconfigure(encoding='utf-8')
+
+# %%
+# ==============================================================================
+# 1. CONFIGURATION & HYPERPARAMETERS
+# ==============================================================================
+
+LATITUDE = 55.6761
+LONGITUDE = 12.5683
+START_DATE = "2025-12-01T00:00"
+END_DATE = "2026-03-01T00:00"
+
+P_MAX = 10.0       # MW
+E_MAX = 20.0       # MWh
+ETA = 0.95         # Round-trip efficiency
+SOC_START = 10.0   # MWh
+SOC_MIN = 0.0      # MWh
+SOC_MAX = 20.0     # MWh
+
+BIDDING_TIME = "2026-02-27 12:00:00"
+TARGET_DAY_START = "2026-02-28 00:00:00"
+TARGET_DAY_END = "2026-02-28 23:00:00"
+
+# %%
+# ==============================================================================
+# 2. DATA LOADING FUNCTIONS
+# ==============================================================================
+
+def fetch_dk2_spot_prices(start_date: str, end_date: str) -> pl.DataFrame:
+    """Fetches spot price records for DK2 price area from Energinet API."""
     url = 'https://api.energidataservice.dk/dataset/DayAheadPrices'
-    
     params = {
         'start': start_date.replace(' ', 'T'),
         'end': end_date.replace(' ', 'T'),
@@ -20,96 +60,273 @@ def fetch_dk2_spot_prices(start_date: str, end_date: str) -> pd.DataFrame:
         'sort': 'TimeDK ASC',
         'limit': 10000 
     }
-    
     response = requests.get(url, params=params)
     response.raise_for_status()
+    records = response.json().get('records', [])
     
-    # We assigned the API result to 'data' here...
-    data = response.json().get('records', [])
-    
-    df = pd.DataFrame(data) 
-    
-    df = df[['TimeDK', 'DayAheadPriceDKK']].rename(
-        columns={'TimeDK': 'HourDK', 'DayAheadPriceDKK': 'SpotPriceDKK'}
+    return (
+        pl.DataFrame(records)
+        .select([
+            pl.col("TimeDK").str.to_datetime().alias("HourDK"),
+            pl.col("DayAheadPriceDKK").cast(pl.Float64).alias("SpotPriceDKK")
+        ])
+        .sort("HourDK")
     )
-    
-    df['HourDK'] = pd.to_datetime(df['HourDK'])
-    df = df.set_index('HourDK').sort_index()
-    
-    return df
-a=requests.get("https://archive-api.open-meteo.com/v1/archive",     params = {
-        "latitude": 55.6761,
-        "longitude": 12.5683,
-        "start_date": "2025-12-01T00:00".split('T')[0],
-        "end_date": "2026-03-01T00:00".split('T')[0],
-        "hourly": "temperature_2m,wind_speed_10m,shortwave_radiation",
-        "timezone": "Europe/Berlin"  # Matches Denmark's timezone
-    }).json().get('hourly', {})
 
-a.keys()
-a['time']
-d = pl.DataFrame({
-    "HourDK": a['time'],
-    "Temp": a['temperature_2m'],
-    "WindSpeed": a['wind_speed_10m'],
-    "Solar": a['shortwave_radiation']
-}).with_columns(pl.col("HourDK").str.to_datetime())
-
-p = (
-    ggplot(data = d, mapping = aes(x = 'HourDK', y = 'Temp')) + geom_line() + theme_bw()
-)
-
-p.show()
-
-def fetch_dk2_weather(start_date: str, end_date: str) -> pd.DataFrame:
-    """
-    Fetches historical/forecast weather data for Copenhagen (DK2 proxy).
-    Variables: Temperature, Wind Speed (10m), and Solar Radiation.
-    """
+def fetch_dk2_weather(start_date: str, end_date: str) -> pl.DataFrame:
+    """Fetches weather covariates for Copenhagen from Open-Meteo Archive."""
     url = "https://archive-api.open-meteo.com/v1/archive"
-    
-    # Coordinates for Copenhagen (representing DK2)
     params = {
-        "latitude": 55.6761,
-        "longitude": 12.5683,
+        "latitude": LATITUDE,
+        "longitude": LONGITUDE,
         "start_date": start_date.split('T')[0],
         "end_date": end_date.split('T')[0],
         "hourly": "temperature_2m,wind_speed_10m,shortwave_radiation",
-        "timezone": "Europe/Berlin"  
+        "timezone": "Europe/Berlin"
     }
-    
     response = requests.get(url, params=params)
     response.raise_for_status()
-    res_data = response.json()
+    hourly = response.json().get('hourly', {})
     
-    # Extract the hourly dictionary
-    hourly = res_data.get('hourly', {})
-    
-    # Create DataFrame
-    df_weather = pd.DataFrame({
-        "HourDK": pd.to_datetime(hourly.get("time")),
+    return pl.DataFrame({
+        "HourDK": hourly.get("time"),
         "Temp_C": hourly.get("temperature_2m"),
         "WindSpeed_ms": hourly.get("wind_speed_10m"),
         "Solar_Wm2": hourly.get("shortwave_radiation")
+    }).with_columns(
+        pl.col("HourDK").str.to_datetime()
+    ).sort("HourDK")
+
+def preprocess_data(df_price: pl.DataFrame, df_weather: pl.DataFrame) -> pl.DataFrame:
+    """Resamples prices to hourly, joins with weather, and creates time features."""
+    df_price_hourly = (
+        df_price
+        .group_by_dynamic("HourDK", every="1h")
+        .agg(pl.col("SpotPriceDKK").mean())
+    )
+    
+    df_merged = (
+        df_price_hourly
+        .join(df_weather, on="HourDK", how="left")
+        .interpolate()
+        .fill_null(strategy="forward")
+        .fill_null(strategy="backward")
+    )
+    
+    return (
+        df_merged
+        .with_columns([
+            pl.col("HourDK").dt.hour().alias("hour"),
+            pl.col("HourDK").dt.weekday().alias("weekday")
+        ])
+        .with_columns([
+            (pl.col("hour") == h).cast(pl.Float64).alias(f"hour_{h}") for h in range(1, 24)
+        ] + [
+            (pl.col("weekday") == w).cast(pl.Float64).alias(f"weekday_{w}") for w in range(1, 7)
+        ])
+    )
+
+def optimize_bess_dispatch(prices: np.ndarray, scenario_name: str) -> tuple[float, pl.DataFrame]:
+    """MILP formulation to optimize battery charge/discharge schedule."""
+    T = len(prices)
+    prob = pulp.LpProblem(f"BESS_MILP_{scenario_name}", pulp.LpMaximize)
+    
+    C = pulp.LpVariable.dicts("Charge_MW", range(T), lowBound=0, upBound=P_MAX)
+    D = pulp.LpVariable.dicts("Discharge_MW", range(T), lowBound=0, upBound=P_MAX)
+    u_c = pulp.LpVariable.dicts("Is_Charging", range(T), cat="Binary")
+    u_d = pulp.LpVariable.dicts("Is_Discharging", range(T), cat="Binary")
+    SoC = pulp.LpVariable.dicts("SoC_MWh", range(T), lowBound=SOC_MIN, upBound=SOC_MAX)
+    
+    eta_one_way = ETA ** 0.5
+    prob += pulp.lpSum([prices[t] * (D[t] - C[t]) for t in range(T)])
+    
+    for t in range(T):
+        prob += u_c[t] + u_d[t] <= 1
+        prob += C[t] <= P_MAX * u_c[t]
+        prob += D[t] <= P_MAX * u_d[t]
+        
+        if t == 0:
+            prob += SoC[t] == SOC_START + (C[t] * eta_one_way) - (D[t] / eta_one_way)
+        else:
+            prob += SoC[t] == SoC[t-1] + (C[t] * eta_one_way) - (D[t] / eta_one_way)
+            
+    prob.solve(pulp.PULP_CBC_CMD(msg=False))
+    
+    dispatch_df = pl.DataFrame({
+        "Hour": list(range(T)),
+        "Price_DKK": prices,
+        "Charge_MW": [C[t].varValue for t in range(T)],
+        "Discharge_MW": [D[t].varValue for t in range(T)],
+        "SoC_MWh": [SoC[t].varValue for t in range(T)]
     })
     
-    return df_weather
-
-df_weather = fetch_dk2_weather("2025-12-01T00:00", "2026-03-01T00:00")
-df_price = fetch_dk2_spot_prices("2025-12-01T00:00", "2026-03-01T00:00").resample('h').mean() # Resample to hourly and forward-fill missing values
-
-df = df_price.join(df_weather.set_index('HourDK'), how='left').reset_index()
+    return pulp.value(prob.objective), dispatch_df
 
 
+# %%
+# ==============================================================================
+# 3. STEP-BY-STEP EXECUTION
+# ==============================================================================
 
-(
-    ggplot(df.reset_index().melt(id_vars='HourDK', value_vars=['SpotPriceDKK', 'Temp_C', 'WindSpeed_ms', 'Solar_Wm2'], var_name='Variable', value_name='Value'), 
-           aes(x='HourDK', y='Value', color='Variable')) +
-    geom_line() +
-    facet_wrap('~Variable', scales='free_y') +
-    theme_bw()
-).show()
+# 3.1 Fetch Data
+df_price_raw = fetch_dk2_spot_prices(START_DATE, END_DATE)
+df_weather_raw = fetch_dk2_weather(START_DATE, END_DATE)
 
-# Splitting the last 48 hours as our test set for the day-ahead + 1 scenario
-train_series = df['SpotPriceDKK'].iloc[:-48]
-test_series = df['SpotPriceDKK'].iloc[-48:]
+# 3.2 Preprocess Data
+df_features = preprocess_data(df_price_raw, df_weather_raw)
+print(df_features.head(4))
+
+# 3.3 Exploratory Data Analysis (Step-by-step, no function wrapper)
+df_plot_sub = (
+    df_features
+    .filter(pl.col("HourDK") >= pl.col("HourDK").max() - pl.duration(days=14))
+    .to_pandas()
+    .melt(
+        id_vars=["HourDK"],
+        value_vars=["SpotPriceDKK", "Temp_C", "WindSpeed_ms", "Solar_Wm2"],
+        var_name="Variable",
+        value_name="Value"
+    )
+)
+
+p_explore = (
+    ggplot(df_plot_sub, aes(x="HourDK", y="Value", color="Variable"))
+    + geom_line(size=0.8, show_legend=False)
+    + facet_wrap("~Variable", scales="free_y", ncol=2)
+    + theme_minimal()
+    + theme(
+        text=element_text(family="sans-serif", color="#2c3e50"),
+        strip_text=element_text(face="bold", size=10),
+        plot_title=element_text(face="bold", size=12, margin={"b": 10}),
+        plot_background=element_rect(fill="#fcfcfc", color=None),
+        figure_size=(10, 6)
+    )
+    + labs(
+        title="Danish Spot Prices (DK2) & Copenhagen Weather Variables (Last 14 Days)",
+        x="Hour",
+        y="Value"
+    )
+)
+p_explore.save("1_data_exploration.png", dpi=150)
+print(p_explore)
+
+# 3.4 SARIMAX Modeling (Step-by-step, no function wrapper)
+print("Fitting SARIMAX model on historical data...")
+pdf = df_features.to_pandas().set_index("HourDK")
+
+train_pdf = pdf.loc[pdf.index < BIDDING_TIME]
+test_pdf = pdf.loc[(pdf.index >= BIDDING_TIME) & (pdf.index <= TARGET_DAY_END)]
+
+exog_cols = ["Temp_C", "WindSpeed_ms", "Solar_Wm2"] + [f"hour_{h}" for h in range(1, 24)] + [f"weekday_{w}" for w in range(1, 7)]
+
+model = SARIMAX(
+    train_pdf["SpotPriceDKK"],
+    exog=train_pdf[exog_cols],
+    order=(2, 0, 2),
+    enforce_stationarity=False,
+    enforce_invertibility=False
+)
+fitted_model = model.fit(disp=False)
+
+forecast_results = fitted_model.get_forecast(steps=len(test_pdf), exog=test_pdf[exog_cols])
+
+df_eval = pl.DataFrame({
+    "HourDK": test_pdf.index,
+    "Actual": test_pdf["SpotPriceDKK"].values,
+    "Forecast": forecast_results.predicted_mean.values,
+    "Lower_CI": forecast_results.conf_int(alpha=0.05).iloc[:, 0].values,
+    "Upper_CI": forecast_results.conf_int(alpha=0.05).iloc[:, 1].values
+})
+
+# Filter to only the target bidding day (D+1)
+target_start_dt = datetime(2026, 2, 28, 0, 0, 0)
+target_end_dt = datetime(2026, 2, 28, 23, 59, 59)
+df_eval_bidding = df_eval.filter(
+    (pl.col("HourDK") >= target_start_dt) & 
+    (pl.col("HourDK") <= target_end_dt)
+)
+
+mae_bidding = (df_eval_bidding["Actual"] - df_eval_bidding["Forecast"]).abs().mean()
+print(f"Day-Ahead Spot Price Forecast MAE: {mae_bidding:.2f} DKK / MWh")
+
+# 3.5 Forecast Visualization (Step-by-step, no function wrapper)
+p_forecast = (
+    ggplot(df_eval_bidding.to_pandas(), aes(x="HourDK"))
+    + geom_ribbon(aes(ymin="Lower_CI", ymax="Upper_CI", fill='"95% Confidence Interval"'), alpha=0.15)
+    + geom_line(aes(y="Actual", color='"Actual Price"'), size=1.2)
+    + geom_line(aes(y="Forecast", color='"Forecasted Price"'), linetype="dashed", size=1.2)
+    + scale_color_manual(name="Spot Price", values={"Actual Price": "#2c3e50", "Forecasted Price": "#e74c3c"})
+    + scale_fill_manual(name="Uncertainty", values={"95% Confidence Interval": "#3498db"})
+    + theme_minimal()
+    + theme(
+        text=element_text(family="sans-serif", color="#2c3e50"),
+        plot_title=element_text(face="bold", size=12, margin={"b": 10}),
+        plot_background=element_rect(fill="#fcfcfc", color=None),
+        legend_position="top",
+        figure_size=(9, 4.5)
+    )
+    + labs(
+        title="Day-Ahead Spot Price Forecast with 95% Prediction Intervals",
+        x="Hour of Day",
+        y="Price (DKK / MWh)"
+    )
+)
+p_forecast.save("2_price_forecast.png", dpi=150)
+print(p_forecast)
+
+# 3.6 BESS Optimization
+forecast_prices = df_eval_bidding["Forecast"].to_numpy()
+actual_prices = df_eval_bidding["Actual"].to_numpy()
+
+forecast_expected_profit, df_forecast_dispatch = optimize_bess_dispatch(forecast_prices, "Forecast")
+oracle_profit, df_oracle_dispatch = optimize_bess_dispatch(actual_prices, "Oracle")
+
+actual_realized_profit = sum(
+    actual_prices[t] * (df_forecast_dispatch["Discharge_MW"][t] - df_forecast_dispatch["Charge_MW"][t])
+    for t in range(len(actual_prices))
+)
+
+print(f"Expected Forecast-Planned Profit: {forecast_expected_profit:,.2f} DKK")
+print(f"Actual Realized Arbitrage Profit: {actual_realized_profit:,.2f} DKK")
+print(f"Perfect Foresight Oracle Profit : {oracle_profit:,.2f} DKK")
+print(f"Market Capture Efficiency       : {(actual_realized_profit / oracle_profit) * 100:.1f}%")
+
+# 3.7 Dispatch Visualization (Step-by-step, no function wrapper)
+df_dispatch_plot = df_forecast_dispatch.with_columns(
+    HourDK=df_eval_bidding["HourDK"],
+    Net_Power_MW=pl.col("Discharge_MW") - pl.col("Charge_MW")
+).to_pandas().melt(
+    id_vars=["HourDK", "Price_DKK"],
+    value_vars=["Net_Power_MW", "SoC_MWh"],
+    var_name="Metric",
+    value_name="Value"
+)
+
+p_dispatch = (
+    ggplot(df_dispatch_plot, aes(x="HourDK", y="Value"))
+    + geom_bar(data=df_dispatch_plot[df_dispatch_plot["Metric"] == "Net_Power_MW"], stat="identity", fill="#3498db", alpha=0.85)
+    + geom_area(data=df_dispatch_plot[df_dispatch_plot["Metric"] == "SoC_MWh"], fill="#2ecc71", alpha=0.3)
+    + geom_line(data=df_dispatch_plot[df_dispatch_plot["Metric"] == "SoC_MWh"], color="#2ecc71", size=1.2)
+    + facet_wrap("~Metric", ncol=1, scales="free_y", labeller=as_labeller({
+        "Net_Power_MW": "Battery Active Dispatch (Charge/Discharge Power, MW)",
+        "SoC_MWh": "State of Charge (SoC, MWh)"
+    }))
+    + theme_minimal()
+    + theme(
+        text=element_text(family="sans-serif", color="#2c3e50"),
+        strip_text=element_text(face="bold", size=10),
+        plot_title=element_text(face="bold", size=12, margin={"b": 10}),
+        plot_background=element_rect(fill="#fcfcfc", color=None),
+        figure_size=(9, 6)
+    )
+    + labs(
+        title="Optimal BESS Dispatch Schedule & State of Charge (SoC)",
+        x="Hour of Day",
+        y="Value"
+    )
+)
+p_dispatch.save("3_battery_dispatch.png", dpi=150)
+print(p_dispatch)
+
+if __name__ == "__main__":
+    pass

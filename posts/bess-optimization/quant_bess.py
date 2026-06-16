@@ -217,6 +217,7 @@ LONGITUDE = 12.5683
 START_DATE = "2025-12-01T00:00"
 END_DATE = "2026-03-01T00:00"
 
+# %%
 # 3.1 Fetch Data
 df_price_raw = fetch_dk2_spot_prices(START_DATE, END_DATE)
 df_weather_raw = fetch_dk2_weather(START_DATE, END_DATE)
