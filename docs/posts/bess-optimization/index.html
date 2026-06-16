@@ -10,7 +10,7 @@
 <meta name="dcterms.date" content="2026-06-16">
 <meta name="description" content="Forecasting wholesale electricity prices using SARIMAX and optimizing physical dispatch for a 10 MW / 20 MWh Battery Energy Storage System (BESS) using Mixed-Integer Linear Programming.">
 
-<title>Algorithmic Day-Ahead BESS Optimization – David Redek</title>
+<title>Algorithmic Day-Ahead BESS Optimization - Extremely work in progress – David Redek</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -146,7 +146,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <header id="title-block-header" class="quarto-title-block default page-columns page-full">
   <div class="quarto-title-banner page-columns page-full">
     <div class="quarto-title column-body">
-      <h1 class="title">Algorithmic Day-Ahead BESS Optimization</h1>
+      <h1 class="title">Algorithmic Day-Ahead BESS Optimization - Extremely work in progress</h1>
                   <div>
         <div class="description">
           Forecasting wholesale electricity prices using SARIMAX and optimizing physical dispatch for a 10 MW / 20 MWh Battery Energy Storage System (BESS) using Mixed-Integer Linear Programming.
@@ -184,7 +184,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#quantitative-bess-optimization-and-spot-price-forecasting" id="toc-quantitative-bess-optimization-and-spot-price-forecasting" class="nav-link active" data-scroll-target="#quantitative-bess-optimization-and-spot-price-forecasting">Quantitative BESS Optimization and Spot Price Forecasting</a></li>
+  <li><a href="#quantitative-bess-optimization-and-spot-price-forecasting---extremely-work-in-progress" id="toc-quantitative-bess-optimization-and-spot-price-forecasting---extremely-work-in-progress" class="nav-link active" data-scroll-target="#quantitative-bess-optimization-and-spot-price-forecasting---extremely-work-in-progress">Quantitative BESS Optimization and Spot Price Forecasting - Extremely work in progress</a></li>
   </ul>
 </nav>
     </div>
@@ -195,9 +195,9 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 
 
-<section id="quantitative-bess-optimization-and-spot-price-forecasting" class="level1">
-<h1>Quantitative BESS Optimization and Spot Price Forecasting</h1>
-<div id="160adc65" class="cell" data-execution_count="1">
+<section id="quantitative-bess-optimization-and-spot-price-forecasting---extremely-work-in-progress" class="level1">
+<h1>Quantitative BESS Optimization and Spot Price Forecasting - Extremely work in progress</h1>
+<div id="c7a3f0ae" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
@@ -212,11 +212,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
 <span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> <span class="op">*</span></span>
 <span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># Uncomment the line below if you are building the Quarto website in headless mode</span></span>
-<span id="cb1-14"><a href="#cb1-14" aria-hidden="true" tabindex="-1"></a><span class="co"># matplotlib.use('Agg')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># matplotlib.use('Agg')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="2ac442f5" class="cell" data-execution_count="2">
+<div id="1bf51086" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>BIDDING_TIME <span class="op">=</span> <span class="st">"2026-02-27 12:00:00"</span></span>
@@ -224,7 +223,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>TARGET_DAY_END <span class="op">=</span> <span class="st">"2026-02-28 23:00:00"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="ccf23b8a" class="cell" data-execution_count="3">
+<div id="6718503c" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
@@ -314,13 +313,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_ribbon(aes(ymin<span class="op">=</span><span class="st">"Lower_CI"</span>, ymax<span class="op">=</span><span class="st">"Upper_CI"</span>, fill<span class="op">=</span><span class="st">'"95% Confidence Interval"'</span>), alpha<span class="op">=</span><span class="fl">0.15</span>)</span>
 <span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_line(aes(y<span class="op">=</span><span class="st">"Actual"</span>, color<span class="op">=</span><span class="st">'"Actual Price"'</span>), size<span class="op">=</span><span class="fl">1.2</span>)</span>
 <span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_line(aes(y<span class="op">=</span><span class="st">"Forecast"</span>, color<span class="op">=</span><span class="st">'"Forecasted Price"'</span>), linetype<span class="op">=</span><span class="st">"dashed"</span>, size<span class="op">=</span><span class="fl">1.2</span>)</span>
-<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> scale_color_manual(name<span class="op">=</span><span class="st">"Spot Price"</span>, values<span class="op">=</span>{<span class="st">"Actual Price"</span>: <span class="st">"#2c3e50"</span>, <span class="st">"Forecasted Price"</span>: <span class="st">"#e74c3c"</span>})</span>
-<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> scale_fill_manual(name<span class="op">=</span><span class="st">"Uncertainty"</span>, values<span class="op">=</span>{<span class="st">"95% Confidence Interval"</span>: <span class="st">"#3498db"</span>})</span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> scale_color_manual(name<span class="op">=</span><span class="st">"Spot Price"</span>, values<span class="op">=</span>{<span class="st">"Actual Price"</span>: <span class="st">"black"</span>, <span class="st">"Forecasted Price"</span>: <span class="st">"red"</span>})</span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> scale_fill_manual(name<span class="op">=</span><span class="st">"Uncertainty"</span>, values<span class="op">=</span>{<span class="st">"95% Confidence Interval"</span>: <span class="st">"lightblue"</span>})</span>
 <span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> theme_minimal()</span>
 <span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> theme(</span>
-<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>            text<span class="op">=</span>element_text(family<span class="op">=</span><span class="st">"sans-serif"</span>, color<span class="op">=</span><span class="st">"#2c3e50"</span>),</span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>            text<span class="op">=</span>element_text(family<span class="op">=</span><span class="st">"sans-serif"</span>, color<span class="op">=</span><span class="st">"black"</span>),</span>
 <span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>            plot_title<span class="op">=</span>element_text(face<span class="op">=</span><span class="st">"bold"</span>, size<span class="op">=</span><span class="dv">12</span>, margin<span class="op">=</span>{<span class="st">"b"</span>: <span class="dv">10</span>}),</span>
-<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>            plot_background<span class="op">=</span>element_rect(fill<span class="op">=</span><span class="st">"#fcfcfc"</span>, color<span class="op">=</span><span class="va">None</span>),</span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>            plot_background<span class="op">=</span>element_rect(fill<span class="op">=</span><span class="st">"white"</span>, color<span class="op">=</span><span class="va">None</span>),</span>
 <span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>            legend_position<span class="op">=</span><span class="st">"top"</span>,</span>
 <span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>            figure_size<span class="op">=</span>(<span class="dv">9</span>, <span class="fl">4.5</span>)</span>
 <span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>        )</span>
@@ -332,13 +331,13 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>    )</span>
 <span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> optimize_bess_dispatch(prices: np.ndarray, scenario_name: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">float</span>, pl.DataFrame]:</span>
-<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>    P_MAX <span class="op">=</span> <span class="fl">10.0</span>       <span class="co"># MW</span></span>
-<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>    E_MAX <span class="op">=</span> <span class="fl">20.0</span>       <span class="co"># MWh</span></span>
-<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>    ETA <span class="op">=</span> <span class="fl">0.95</span>         <span class="co"># Round-trip efficiency</span></span>
-<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>    SOC_START <span class="op">=</span> <span class="fl">10.0</span>   <span class="co"># MWh</span></span>
-<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>    SOC_MIN <span class="op">=</span> <span class="fl">0.0</span>      <span class="co"># MWh</span></span>
-<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>    SOC_MAX <span class="op">=</span> <span class="fl">20.0</span>     <span class="co"># MWh</span></span>
-<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""MILP formulation to optimize battery charge/discharge schedule."""</span></span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""MILP formulation to optimize battery charge/discharge schedule."""</span></span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>    P_MAX <span class="op">=</span> <span class="fl">10.0</span></span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>    E_MAX <span class="op">=</span> <span class="fl">20.0</span></span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>    ETA <span class="op">=</span> <span class="fl">0.95</span></span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>    SOC_START <span class="op">=</span> <span class="fl">10.0</span></span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>    SOC_MIN <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>    SOC_MAX <span class="op">=</span> <span class="fl">20.0</span></span>
 <span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>    T <span class="op">=</span> <span class="bu">len</span>(prices)</span>
 <span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>    prob <span class="op">=</span> pulp.LpProblem(<span class="ss">f"BESS_MILP_</span><span class="sc">{</span>scenario_name<span class="sc">}</span><span class="ss">"</span>, pulp.LpMaximize)</span>
 <span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>    </span>
@@ -387,19 +386,19 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>    </span>
 <span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
 <span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>        ggplot(df_dispatch_plot, aes(x<span class="op">=</span><span class="st">"HourDK"</span>, y<span class="op">=</span><span class="st">"Value"</span>))</span>
-<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_bar(data<span class="op">=</span>df_dispatch_plot[df_dispatch_plot[<span class="st">"Metric"</span>] <span class="op">==</span> <span class="st">"Net_Power_MW"</span>], stat<span class="op">=</span><span class="st">"identity"</span>, fill<span class="op">=</span><span class="st">"#3498db"</span>, alpha<span class="op">=</span><span class="fl">0.85</span>)</span>
-<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_area(data<span class="op">=</span>df_dispatch_plot[df_dispatch_plot[<span class="st">"Metric"</span>] <span class="op">==</span> <span class="st">"SoC_MWh"</span>], fill<span class="op">=</span><span class="st">"#2ecc71"</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
-<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_line(data<span class="op">=</span>df_dispatch_plot[df_dispatch_plot[<span class="st">"Metric"</span>] <span class="op">==</span> <span class="st">"SoC_MWh"</span>], color<span class="op">=</span><span class="st">"#2ecc71"</span>, size<span class="op">=</span><span class="fl">1.2</span>)</span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_bar(data<span class="op">=</span>df_dispatch_plot[df_dispatch_plot[<span class="st">"Metric"</span>] <span class="op">==</span> <span class="st">"Net_Power_MW"</span>], stat<span class="op">=</span><span class="st">"identity"</span>, fill<span class="op">=</span><span class="st">"blue"</span>, alpha<span class="op">=</span><span class="fl">0.85</span>)</span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_area(data<span class="op">=</span>df_dispatch_plot[df_dispatch_plot[<span class="st">"Metric"</span>] <span class="op">==</span> <span class="st">"SoC_MWh"</span>], fill<span class="op">=</span><span class="st">"green"</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_line(data<span class="op">=</span>df_dispatch_plot[df_dispatch_plot[<span class="st">"Metric"</span>] <span class="op">==</span> <span class="st">"SoC_MWh"</span>], color<span class="op">=</span><span class="st">"green"</span>, size<span class="op">=</span><span class="fl">1.2</span>)</span>
 <span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> facet_wrap(<span class="st">"~Metric"</span>, ncol<span class="op">=</span><span class="dv">1</span>, scales<span class="op">=</span><span class="st">"free_y"</span>, labeller<span class="op">=</span>as_labeller({</span>
 <span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Net_Power_MW"</span>: <span class="st">"Battery Active Dispatch (Charge/Discharge Power, MW)"</span>,</span>
 <span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>            <span class="st">"SoC_MWh"</span>: <span class="st">"State of Charge (SoC, MWh)"</span></span>
 <span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>        }))</span>
 <span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> theme_minimal()</span>
 <span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> theme(</span>
-<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>            text<span class="op">=</span>element_text(family<span class="op">=</span><span class="st">"sans-serif"</span>, color<span class="op">=</span><span class="st">"#2c3e50"</span>),</span>
+<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>            text<span class="op">=</span>element_text(family<span class="op">=</span><span class="st">"sans-serif"</span>, color<span class="op">=</span><span class="st">"black"</span>),</span>
 <span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>            strip_text<span class="op">=</span>element_text(face<span class="op">=</span><span class="st">"bold"</span>, size<span class="op">=</span><span class="dv">10</span>),</span>
 <span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>            plot_title<span class="op">=</span>element_text(face<span class="op">=</span><span class="st">"bold"</span>, size<span class="op">=</span><span class="dv">12</span>, margin<span class="op">=</span>{<span class="st">"b"</span>: <span class="dv">10</span>}),</span>
-<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>            plot_background<span class="op">=</span>element_rect(fill<span class="op">=</span><span class="st">"#fcfcfc"</span>, color<span class="op">=</span><span class="va">None</span>),</span>
+<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>            plot_background<span class="op">=</span>element_rect(fill<span class="op">=</span><span class="st">"white"</span>, color<span class="op">=</span><span class="va">None</span>),</span>
 <span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>            figure_size<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">6</span>)</span>
 <span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>        )</span>
 <span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> labs(</span>
@@ -410,7 +409,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="af4b8cf3" class="cell" data-execution_count="4">
+<div id="b71d8a16" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
@@ -422,7 +421,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>END_DATE <span class="op">=</span> <span class="st">"2026-03-01T00:00"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="b4dfe72d" class="cell" data-execution_count="5">
+<div id="038594fb" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.1 Fetch Data</span></span>
@@ -430,7 +429,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>df_weather_raw <span class="op">=</span> fetch_dk2_weather(START_DATE, END_DATE)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="e0c275ed" class="cell" data-execution_count="6">
+<div id="f120d950" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.2 Preprocess Data</span></span>
@@ -456,7 +455,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 └────────────┴────────────┴────────┴───────────┴───┴───────────┴───────────┴───────────┴───────────┘</code></pre>
 </div>
 </div>
-<div id="6c64c4e6" class="cell" data-execution_count="7">
+<div id="c16637a6" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.3 Exploratory Data Analysis</span></span>
@@ -492,7 +491,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="b205756f" class="cell" data-execution_count="8">
+<div id="f5ab8eda" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.4 SARIMAX Modeling</span></span>
@@ -522,7 +521,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb9-25"><a href="#cb9-25" aria-hidden="true" tabindex="-1"></a>    <span class="st">"Upper_CI"</span>: forecast_results.conf_int(alpha<span class="op">=</span><span class="fl">0.05</span>).iloc[:, <span class="dv">1</span>].values</span>
 <span id="cb9-26"><a href="#cb9-26" aria-hidden="true" tabindex="-1"></a>})</span>
 <span id="cb9-27"><a href="#cb9-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter to only the target bidding day (D+1)</span></span>
+<span id="cb9-28"><a href="#cb9-28" aria-hidden="true" tabindex="-1"></a><span class="co"># Filter to target day</span></span>
 <span id="cb9-29"><a href="#cb9-29" aria-hidden="true" tabindex="-1"></a>target_start_dt <span class="op">=</span> datetime(<span class="dv">2026</span>, <span class="dv">2</span>, <span class="dv">28</span>, <span class="dv">0</span>, <span class="dv">0</span>, <span class="dv">0</span>)</span>
 <span id="cb9-30"><a href="#cb9-30" aria-hidden="true" tabindex="-1"></a>target_end_dt <span class="op">=</span> datetime(<span class="dv">2026</span>, <span class="dv">2</span>, <span class="dv">28</span>, <span class="dv">23</span>, <span class="dv">59</span>, <span class="dv">59</span>)</span>
 <span id="cb9-31"><a href="#cb9-31" aria-hidden="true" tabindex="-1"></a>df_eval_bidding <span class="op">=</span> df_eval.<span class="bu">filter</span>(</span>
@@ -541,21 +540,21 @@ C:\Users\david\AppData\Roaming\Python\Python314\site-packages\statsmodels\tsa\ba
 <pre><code>Day-Ahead Spot Price Forecast MAE: 132.44 DKK / MWh</code></pre>
 </div>
 </div>
-<div id="bd18a3dc" class="cell" data-execution_count="9">
+<div id="46291747" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.5 Forecast Visualization</span></span>
 <span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>p_forecast <span class="op">=</span> plot_price_forecast(df_eval_bidding)</span>
 <span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>p_forecast.save(<span class="st">"2_price_forecast.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(p_forecast)  <span class="co"># Opens the interactive plot window in VS Code</span></span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>p_forecast.show()  <span class="co"># Ensure the plot is displayed in interactive environments</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(p_forecast)</span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>p_forecast.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
+<div class="cell-output cell-output-stdout">
+<pre><code>&lt;ggplot: (864 x 432)&gt;</code></pre>
+</div>
 <div class="cell-output cell-output-stderr">
 <pre><code>C:\Users\david\AppData\Roaming\Python\Python314\site-packages\plotnine\ggplot.py:623: PlotnineWarning: Saving 9 x 4.5 in image.
 C:\Users\david\AppData\Roaming\Python\Python314\site-packages\plotnine\ggplot.py:624: PlotnineWarning: Filename: 2_price_forecast.png</code></pre>
-</div>
-<div class="cell-output cell-output-stdout">
-<pre><code>&lt;ggplot: (864 x 432)&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
@@ -565,7 +564,7 @@ C:\Users\david\AppData\Roaming\Python\Python314\site-packages\plotnine\ggplot.py
 </div>
 </div>
 </div>
-<div id="08958b75" class="cell" data-execution_count="10">
+<div id="f45b1c70" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.6 BESS Optimization</span></span>
@@ -592,14 +591,14 @@ Perfect Foresight Oracle Profit : 11,844.28 DKK
 Market Capture Efficiency       : 7.3%</code></pre>
 </div>
 </div>
-<div id="459dab4f" class="cell" data-execution_count="11">
+<div id="e968678e" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.7 Dispatch Visualization</span></span>
 <span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>p_dispatch <span class="op">=</span> plot_battery_dispatch(df_forecast_dispatch, df_eval_bidding)</span>
 <span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>p_dispatch.save(<span class="st">"3_battery_dispatch.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(p_dispatch)  <span class="co"># Opens the interactive plot window in VS Code</span></span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>p_dispatch.show()  <span class="co"># Ensure the plot is displayed in interactive environments</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(p_dispatch)</span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>p_dispatch.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stderr">
 <pre><code>C:\Users\david\AppData\Roaming\Python\Python314\site-packages\plotnine\ggplot.py:623: PlotnineWarning: Saving 9 x 6 in image.

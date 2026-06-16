@@ -2,8 +2,7 @@
   {
     "listing": "/projects.html",
     "items": [
-      "/posts/bess-optimization/index.html",
-      "/posts/causal-prediction/index.html"
+      "/posts/bess-optimization/index.html"
     ]
   }
 ]

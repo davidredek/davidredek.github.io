@@ -13,7 +13,7 @@ format:
     self-contained: true
 execute:
   message: false
-draft: false
+draft: true
 ---
 
 ## Objective & Theoretical Framework

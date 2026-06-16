@@ -1,5 +1,5 @@
 ---
-title: Algorithmic Day-Ahead BESS Optimization
+title: Algorithmic Day-Ahead BESS Optimization - Extremely work in progress
 description: Forecasting wholesale electricity prices using SARIMAX and optimizing physical dispatch for a 10 MW / 20 MWh Battery Energy Storage System (BESS) using Mixed-Integer Linear Programming.
 date: '2026-06-16'
 image: 3_battery_dispatch.png
@@ -11,7 +11,7 @@ jupyter: python3
 ---
 
 
-# Quantitative BESS Optimization and Spot Price Forecasting
+# Quantitative BESS Optimization and Spot Price Forecasting - Extremely work in progress
 
 ```{python}
 import sys
@@ -26,7 +26,6 @@ import pulp
 import matplotlib
 from plotnine import *
 
-# Uncomment the line below if you are building the Quarto website in headless mode
 # matplotlib.use('Agg')
 ```
 
@@ -124,13 +123,13 @@ def plot_price_forecast(df_eval_bidding: pl.DataFrame):
         + geom_ribbon(aes(ymin="Lower_CI", ymax="Upper_CI", fill='"95% Confidence Interval"'), alpha=0.15)
         + geom_line(aes(y="Actual", color='"Actual Price"'), size=1.2)
         + geom_line(aes(y="Forecast", color='"Forecasted Price"'), linetype="dashed", size=1.2)
-        + scale_color_manual(name="Spot Price", values={"Actual Price": "#2c3e50", "Forecasted Price": "#e74c3c"})
-        + scale_fill_manual(name="Uncertainty", values={"95% Confidence Interval": "#3498db"})
+        + scale_color_manual(name="Spot Price", values={"Actual Price": "black", "Forecasted Price": "red"})
+        + scale_fill_manual(name="Uncertainty", values={"95% Confidence Interval": "lightblue"})
         + theme_minimal()
         + theme(
-            text=element_text(family="sans-serif", color="#2c3e50"),
+            text=element_text(family="sans-serif", color="black"),
             plot_title=element_text(face="bold", size=12, margin={"b": 10}),
-            plot_background=element_rect(fill="#fcfcfc", color=None),
+            plot_background=element_rect(fill="white", color=None),
             legend_position="top",
             figure_size=(9, 4.5)
         )
@@ -142,13 +141,13 @@ def plot_price_forecast(df_eval_bidding: pl.DataFrame):
     )
 
 def optimize_bess_dispatch(prices: np.ndarray, scenario_name: str) -> tuple[float, pl.DataFrame]:
-    P_MAX = 10.0       # MW
-    E_MAX = 20.0       # MWh
-    ETA = 0.95         # Round-trip efficiency
-    SOC_START = 10.0   # MWh
-    SOC_MIN = 0.0      # MWh
-    SOC_MAX = 20.0     # MWh
     """MILP formulation to optimize battery charge/discharge schedule."""
+    P_MAX = 10.0
+    E_MAX = 20.0
+    ETA = 0.95
+    SOC_START = 10.0
+    SOC_MIN = 0.0
+    SOC_MAX = 20.0
     T = len(prices)
     prob = pulp.LpProblem(f"BESS_MILP_{scenario_name}", pulp.LpMaximize)
     
@@ -197,19 +196,19 @@ def plot_battery_dispatch(df_dispatch: pl.DataFrame, df_eval: pl.DataFrame):
     
     return (
         ggplot(df_dispatch_plot, aes(x="HourDK", y="Value"))
-        + geom_bar(data=df_dispatch_plot[df_dispatch_plot["Metric"] == "Net_Power_MW"], stat="identity", fill="#3498db", alpha=0.85)
-        + geom_area(data=df_dispatch_plot[df_dispatch_plot["Metric"] == "SoC_MWh"], fill="#2ecc71", alpha=0.3)
-        + geom_line(data=df_dispatch_plot[df_dispatch_plot["Metric"] == "SoC_MWh"], color="#2ecc71", size=1.2)
+        + geom_bar(data=df_dispatch_plot[df_dispatch_plot["Metric"] == "Net_Power_MW"], stat="identity", fill="blue", alpha=0.85)
+        + geom_area(data=df_dispatch_plot[df_dispatch_plot["Metric"] == "SoC_MWh"], fill="green", alpha=0.3)
+        + geom_line(data=df_dispatch_plot[df_dispatch_plot["Metric"] == "SoC_MWh"], color="green", size=1.2)
         + facet_wrap("~Metric", ncol=1, scales="free_y", labeller=as_labeller({
             "Net_Power_MW": "Battery Active Dispatch (Charge/Discharge Power, MW)",
             "SoC_MWh": "State of Charge (SoC, MWh)"
         }))
         + theme_minimal()
         + theme(
-            text=element_text(family="sans-serif", color="#2c3e50"),
+            text=element_text(family="sans-serif", color="black"),
             strip_text=element_text(face="bold", size=10),
             plot_title=element_text(face="bold", size=12, margin={"b": 10}),
-            plot_background=element_rect(fill="#fcfcfc", color=None),
+            plot_background=element_rect(fill="white", color=None),
             figure_size=(9, 6)
         )
         + labs(
@@ -297,7 +296,7 @@ df_eval = pl.DataFrame({
     "Upper_CI": forecast_results.conf_int(alpha=0.05).iloc[:, 1].values
 })
 
-# Filter to only the target bidding day (D+1)
+# Filter to target day
 target_start_dt = datetime(2026, 2, 28, 0, 0, 0)
 target_end_dt = datetime(2026, 2, 28, 23, 59, 59)
 df_eval_bidding = df_eval.filter(
@@ -313,8 +312,8 @@ print(f"Day-Ahead Spot Price Forecast MAE: {mae_bidding:.2f} DKK / MWh")
 # 3.5 Forecast Visualization
 p_forecast = plot_price_forecast(df_eval_bidding)
 p_forecast.save("2_price_forecast.png", dpi=150)
-print(p_forecast)  # Opens the interactive plot window in VS Code
-p_forecast.show()  # Ensure the plot is displayed in interactive environments
+print(p_forecast)
+p_forecast.show()
 ```
 
 ```{python}
@@ -340,6 +339,6 @@ print(f"Market Capture Efficiency       : {(actual_realized_profit / oracle_prof
 # 3.7 Dispatch Visualization
 p_dispatch = plot_battery_dispatch(df_forecast_dispatch, df_eval_bidding)
 p_dispatch.save("3_battery_dispatch.png", dpi=150)
-print(p_dispatch)  # Opens the interactive plot window in VS Code
-p_dispatch.show()  # Ensure the plot is displayed in interactive environments
+print(p_dispatch)
+p_dispatch.show()
 ```
