@@ -1,19 +1,19 @@
-# ---
-# title: "Algorithmic Day-Ahead BESS Optimization"
-# description: "Forecasting wholesale electricity prices using SARIMAX and optimizing physical dispatch for a 10 MW / 20 MWh Battery Energy Storage System (BESS) using Mixed-Integer Linear Programming."
-# date: "2026-06-16"
-# image: "3_battery_dispatch.png"
-# draft: false
-# format:
-#   html:
-#     code-fold: true
-# jupyter: python3
-# ---
+---
+title: Algorithmic Day-Ahead BESS Optimization
+description: Forecasting wholesale electricity prices using SARIMAX and optimizing physical dispatch for a 10 MW / 20 MWh Battery Energy Storage System (BESS) using Mixed-Integer Linear Programming.
+date: '2026-06-16'
+image: 3_battery_dispatch.png
+draft: false
+format:
+  html:
+    code-fold: true
+jupyter: python3
+---
 
-# %% [markdown]
-# # Quantitative BESS Optimization and Spot Price Forecasting
 
-# %%
+# Quantitative BESS Optimization and Spot Price Forecasting
+
+```{python}
 import sys
 import time
 import requests
@@ -28,14 +28,15 @@ from plotnine import *
 
 # Uncomment the line below if you are building the Quarto website in headless mode
 # matplotlib.use('Agg')
+```
 
-
-# %%
+```{python}
 BIDDING_TIME = "2026-02-27 12:00:00"
 TARGET_DAY_START = "2026-02-28 00:00:00"
 TARGET_DAY_END = "2026-02-28 23:00:00"
+```
 
-# %%
+```{python}
 # ==============================================================================
 # 2. CORE FUNCTIONS
 # ==============================================================================
@@ -217,8 +218,9 @@ def plot_battery_dispatch(df_dispatch: pl.DataFrame, df_eval: pl.DataFrame):
             y="Value"
         )
     )
+```
 
-# %%
+```{python}
 # ==============================================================================
 # 3. PIPELINE EXECUTION
 # ==============================================================================
@@ -226,18 +228,21 @@ LATITUDE = 55.6761
 LONGITUDE = 12.5683
 START_DATE = "2025-12-01T00:00"
 END_DATE = "2026-03-01T00:00"
+```
 
-# %%
+```{python}
 # 3.1 Fetch Data
 df_price_raw = fetch_dk2_spot_prices(START_DATE, END_DATE)
 df_weather_raw = fetch_dk2_weather(START_DATE, END_DATE)
+```
 
-# %%
+```{python}
 # 3.2 Preprocess Data
 df_features = preprocess_data(df_price_raw, df_weather_raw)
 print(df_features.head(4))
+```
 
-# %%
+```{python}
 # 3.3 Exploratory Data Analysis
 df_plot_sub = (
         df_features
@@ -262,8 +267,9 @@ df_plot_sub = (
         y="Value"
     )
 ).show()
+```
 
-# %%
+```{python}
 # 3.4 SARIMAX Modeling
 pdf = df_features.to_pandas().set_index("HourDK")
 
@@ -301,14 +307,17 @@ df_eval_bidding = df_eval.filter(
 
 mae_bidding = (df_eval_bidding["Actual"] - df_eval_bidding["Forecast"]).abs().mean()
 print(f"Day-Ahead Spot Price Forecast MAE: {mae_bidding:.2f} DKK / MWh")
+```
 
-# %%
+```{python}
 # 3.5 Forecast Visualization
 p_forecast = plot_price_forecast(df_eval_bidding)
 p_forecast.save("2_price_forecast.png", dpi=150)
 print(p_forecast)  # Opens the interactive plot window in VS Code
 p_forecast.show()  # Ensure the plot is displayed in interactive environments
-# %%
+```
+
+```{python}
 # 3.6 BESS Optimization
 forecast_prices = df_eval_bidding["Forecast"].to_numpy()
 actual_prices = df_eval_bidding["Actual"].to_numpy()
@@ -325,10 +334,12 @@ print(f"Expected Forecast-Planned Profit: {forecast_expected_profit:,.2f} DKK")
 print(f"Actual Realized Arbitrage Profit: {actual_realized_profit:,.2f} DKK")
 print(f"Perfect Foresight Oracle Profit : {oracle_profit:,.2f} DKK")
 print(f"Market Capture Efficiency       : {(actual_realized_profit / oracle_profit) * 100:.1f}%")
+```
 
-# %%
+```{python}
 # 3.7 Dispatch Visualization
 p_dispatch = plot_battery_dispatch(df_forecast_dispatch, df_eval_bidding)
 p_dispatch.save("3_battery_dispatch.png", dpi=150)
 print(p_dispatch)  # Opens the interactive plot window in VS Code
 p_dispatch.show()  # Ensure the plot is displayed in interactive environments
+```
