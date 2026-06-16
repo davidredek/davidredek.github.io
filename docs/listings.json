@@ -1,6 +1,8 @@
 [
   {
     "listing": "/projects.html",
-    "items": []
+    "items": [
+      "/posts/causal-prediction/index.html"
+    ]
   }
 ]
