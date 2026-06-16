@@ -1,9 +1,7 @@
 # %%
 """
-Quantitative BESS Optimization and Spot Price Forecasting Pipeline
-Day-Ahead Bidding Simulation on the Danish Power Market (DK2 Area)
+Quantitative BESS Optimization and Spot Price Forecasting 
 
-Author: David Redeck
 """
 
 import sys
@@ -16,19 +14,13 @@ import statsmodels.api as sm
 from statsmodels.tsa.statespace.sarimax import SARIMAX
 import pulp
 import matplotlib
+from plotnine import *
 
 # Uncomment the line below if you are building the Quarto website in headless mode
 # matplotlib.use('Agg')
-from plotnine import *
 
-# Fix Windows console encoding for Polars table drawings
-sys.stdout.reconfigure(encoding='utf-8')
 
 # %%
-
-
-
-
 BIDDING_TIME = "2026-02-27 12:00:00"
 TARGET_DAY_START = "2026-02-28 00:00:00"
 TARGET_DAY_END = "2026-02-28 23:00:00"
@@ -267,7 +259,7 @@ pdf = df_features.to_pandas().set_index("HourDK")
 train_pdf = pdf.loc[pdf.index < BIDDING_TIME]
 test_pdf = pdf.loc[(pdf.index >= BIDDING_TIME) & (pdf.index <= TARGET_DAY_END)]
 
-exog_cols = ["Temp_C", "WindSpeed_ms", "Solar_Wm2"] + [f"hour_{h}" for h in range(1, 24)] + [f"weekday_{w}" for w in range(1, 7)]
+exog_cols = ["Temp_C", "WindSpeed_ms", "Solar_Wm2"] 
 
 model = SARIMAX(
     train_pdf["SpotPriceDKK"],
@@ -304,7 +296,7 @@ print(f"Day-Ahead Spot Price Forecast MAE: {mae_bidding:.2f} DKK / MWh")
 p_forecast = plot_price_forecast(df_eval_bidding)
 p_forecast.save("2_price_forecast.png", dpi=150)
 print(p_forecast)  # Opens the interactive plot window in VS Code
-
+p_forecast.show()  # Ensure the plot is displayed in interactive environments
 # %%
 # 3.6 BESS Optimization
 forecast_prices = df_eval_bidding["Forecast"].to_numpy()
@@ -328,8 +320,4 @@ print(f"Market Capture Efficiency       : {(actual_realized_profit / oracle_prof
 p_dispatch = plot_battery_dispatch(df_forecast_dispatch, df_eval_bidding)
 p_dispatch.save("3_battery_dispatch.png", dpi=150)
 print(p_dispatch)  # Opens the interactive plot window in VS Code
-
-# %%
-if __name__ == "__main__":
-    # run_pipeline()
-    pass
+p_dispatch.show()  # Ensure the plot is displayed in interactive environments
