@@ -25,21 +25,9 @@ from plotnine import *
 sys.stdout.reconfigure(encoding='utf-8')
 
 # %%
-# ==============================================================================
-# 1. CONFIGURATION & HYPERPARAMETERS
-# ==============================================================================
 
-LATITUDE = 55.6761
-LONGITUDE = 12.5683
-START_DATE = "2025-12-01T00:00"
-END_DATE = "2026-03-01T00:00"
 
-P_MAX = 10.0       # MW
-E_MAX = 20.0       # MWh
-ETA = 0.95         # Round-trip efficiency
-SOC_START = 10.0   # MWh
-SOC_MIN = 0.0      # MWh
-SOC_MAX = 20.0     # MWh
+
 
 BIDDING_TIME = "2026-02-27 12:00:00"
 TARGET_DAY_START = "2026-02-28 00:00:00"
@@ -126,78 +114,6 @@ def preprocess_data(df_price: pl.DataFrame, df_weather: pl.DataFrame) -> pl.Data
         ])
     )
 
-def plot_exploratory_data(df_features: pl.DataFrame):
-    """Plots the last 14 days of historical spot prices and weather variables."""
-    df_plot_sub = (
-        df_features
-        .filter(pl.col("HourDK") >= pl.col("HourDK").max() - pl.duration(days=14))
-        .to_pandas()
-        .melt(
-            id_vars=["HourDK"],
-            value_vars=["SpotPriceDKK", "Temp_C", "WindSpeed_ms", "Solar_Wm2"],
-            var_name="Variable",
-            value_name="Value"
-        )
-    )
-    
-    return (
-        ggplot(df_plot_sub, aes(x="HourDK", y="Value", color="Variable"))
-        + geom_line(size=0.8, show_legend=False)
-        + facet_wrap("~Variable", scales="free_y", ncol=2)
-        + theme_minimal()
-        + theme(
-            text=element_text(family="sans-serif", color="#2c3e50"),
-            strip_text=element_text(face="bold", size=10),
-            plot_title=element_text(face="bold", size=12, margin={"b": 10}),
-            plot_background=element_rect(fill="#fcfcfc", color=None),
-            figure_size=(10, 6)
-        )
-        + labs(
-            title="Danish Spot Prices (DK2) & Copenhagen Weather Variables (Last 14 Days)",
-            x="Hour",
-            y="Value"
-        )
-    )
-
-def fit_and_forecast_sarimax(df_features: pl.DataFrame, bidding_time: str, target_end: str):
-    """Fits SARIMAX on history and forecasts day-ahead prices."""
-    pdf = df_features.to_pandas().set_index("HourDK")
-    
-    train_pdf = pdf.loc[pdf.index < bidding_time]
-    test_pdf = pdf.loc[(pdf.index >= bidding_time) & (pdf.index <= target_end)]
-    
-    exog_cols = ["Temp_C", "WindSpeed_ms", "Solar_Wm2"] + [f"hour_{h}" for h in range(1, 24)] + [f"weekday_{w}" for w in range(1, 7)]
-    
-    model = SARIMAX(
-        train_pdf["SpotPriceDKK"],
-        exog=train_pdf[exog_cols],
-        order=(2, 0, 2),
-        enforce_stationarity=False,
-        enforce_invertibility=False
-    )
-    fitted_model = model.fit(disp=False)
-    
-    forecast_results = fitted_model.get_forecast(steps=len(test_pdf), exog=test_pdf[exog_cols])
-    
-    df_eval = pl.DataFrame({
-        "HourDK": test_pdf.index,
-        "Actual": test_pdf["SpotPriceDKK"].values,
-        "Forecast": forecast_results.predicted_mean.values,
-        "Lower_CI": forecast_results.conf_int(alpha=0.05).iloc[:, 0].values,
-        "Upper_CI": forecast_results.conf_int(alpha=0.05).iloc[:, 1].values
-    })
-    
-    # Filter to only the target bidding day (D+1)
-    target_start_dt = datetime(2026, 2, 28, 0, 0, 0)
-    target_end_dt = datetime(2026, 2, 28, 23, 59, 59)
-    df_eval_bidding = df_eval.filter(
-        (pl.col("HourDK") >= target_start_dt) & 
-        (pl.col("HourDK") <= target_end_dt)
-    )
-    
-    mae = (df_eval_bidding["Actual"] - df_eval_bidding["Forecast"]).abs().mean()
-    return df_eval_bidding, mae
-
 def plot_price_forecast(df_eval_bidding: pl.DataFrame):
     """Visualizes the 36h-ahead spot price forecast with 95% confidence intervals."""
     return (
@@ -223,6 +139,12 @@ def plot_price_forecast(df_eval_bidding: pl.DataFrame):
     )
 
 def optimize_bess_dispatch(prices: np.ndarray, scenario_name: str) -> tuple[float, pl.DataFrame]:
+    P_MAX = 10.0       # MW
+    E_MAX = 20.0       # MWh
+    ETA = 0.95         # Round-trip efficiency
+    SOC_START = 10.0   # MWh
+    SOC_MIN = 0.0      # MWh
+    SOC_MAX = 20.0     # MWh
     """MILP formulation to optimize battery charge/discharge schedule."""
     T = len(prices)
     prob = pulp.LpProblem(f"BESS_MILP_{scenario_name}", pulp.LpMaximize)
@@ -296,8 +218,12 @@ def plot_battery_dispatch(df_dispatch: pl.DataFrame, df_eval: pl.DataFrame):
 
 # %%
 # ==============================================================================
-# 3. STEP-BY-STEP EXECUTION (Jupyter/Quarto Interactive Flow)
+# 3. PIPELINE EXECUTION
 # ==============================================================================
+LATITUDE = 55.6761
+LONGITUDE = 12.5683
+START_DATE = "2025-12-01T00:00"
+END_DATE = "2026-03-01T00:00"
 
 # 3.1 Fetch Data
 df_price_raw = fetch_dk2_spot_prices(START_DATE, END_DATE)
@@ -310,14 +236,67 @@ print(df_features.head(4))
 
 # %%
 # 3.3 Exploratory Data Analysis
-p_explore = plot_exploratory_data(df_features)
-p_explore.save("1_data_exploration.png", dpi=150)
-print(p_explore)  # Opens the interactive plot window in VS Code
+df_plot_sub = (
+        df_features
+        .filter(pl.col("HourDK") >= pl.col("HourDK").max() - pl.duration(days=14))
+        .to_pandas()
+        .melt(
+            id_vars=["HourDK"],
+            value_vars=["SpotPriceDKK", "Temp_C", "WindSpeed_ms", "Solar_Wm2"],
+            var_name="Variable",
+            value_name="Value"
+        )
+    )
+    
+(
+    ggplot(df_plot_sub, aes(x="HourDK", y="Value", color="Variable")) 
+    + geom_line(size=0.8, show_legend=False)
+    + facet_wrap("~Variable", scales="free_y", ncol=2)
+    + theme_minimal()
+    + labs(
+        title="Spot Prices (DK2) & Copenhagen Weather Variables (Last 14 Days)",
+        x="Hour",
+        y="Value"
+    )
+).show()
 
 # %%
 # 3.4 SARIMAX Modeling
-print("Fitting SARIMAX model on historical data...")
-df_eval_bidding, mae_bidding = fit_and_forecast_sarimax(df_features, BIDDING_TIME, TARGET_DAY_END)
+pdf = df_features.to_pandas().set_index("HourDK")
+
+train_pdf = pdf.loc[pdf.index < BIDDING_TIME]
+test_pdf = pdf.loc[(pdf.index >= BIDDING_TIME) & (pdf.index <= TARGET_DAY_END)]
+
+exog_cols = ["Temp_C", "WindSpeed_ms", "Solar_Wm2"] + [f"hour_{h}" for h in range(1, 24)] + [f"weekday_{w}" for w in range(1, 7)]
+
+model = SARIMAX(
+    train_pdf["SpotPriceDKK"],
+    exog=train_pdf[exog_cols],
+    order=(2, 0, 2),
+    enforce_stationarity=False,
+    enforce_invertibility=False
+)
+fitted_model = model.fit(disp=False)
+
+forecast_results = fitted_model.get_forecast(steps=len(test_pdf), exog=test_pdf[exog_cols])
+
+df_eval = pl.DataFrame({
+    "HourDK": test_pdf.index,
+    "Actual": test_pdf["SpotPriceDKK"].values,
+    "Forecast": forecast_results.predicted_mean.values,
+    "Lower_CI": forecast_results.conf_int(alpha=0.05).iloc[:, 0].values,
+    "Upper_CI": forecast_results.conf_int(alpha=0.05).iloc[:, 1].values
+})
+
+# Filter to only the target bidding day (D+1)
+target_start_dt = datetime(2026, 2, 28, 0, 0, 0)
+target_end_dt = datetime(2026, 2, 28, 23, 59, 59)
+df_eval_bidding = df_eval.filter(
+    (pl.col("HourDK") >= target_start_dt) & 
+    (pl.col("HourDK") <= target_end_dt)
+)
+
+mae_bidding = (df_eval_bidding["Actual"] - df_eval_bidding["Forecast"]).abs().mean()
 print(f"Day-Ahead Spot Price Forecast MAE: {mae_bidding:.2f} DKK / MWh")
 
 # %%
@@ -349,27 +328,6 @@ print(f"Market Capture Efficiency       : {(actual_realized_profit / oracle_prof
 p_dispatch = plot_battery_dispatch(df_forecast_dispatch, df_eval_bidding)
 p_dispatch.save("3_battery_dispatch.png", dpi=150)
 print(p_dispatch)  # Opens the interactive plot window in VS Code
-
-# %%
-# ==============================================================================
-# 4. FULL PIPELINE WRAPPER (For automation / batch execution)
-# ==============================================================================
-def run_pipeline():
-    """Runs the complete pipeline end-to-end sequentially."""
-    print("Running full pipeline...")
-    prices = fetch_dk2_spot_prices(START_DATE, END_DATE)
-    weather = fetch_dk2_weather(START_DATE, END_DATE)
-    
-    features = preprocess_data(prices, weather)
-    plot_exploratory_data(features).save("1_data_exploration.png", dpi=150)
-    
-    eval_bidding, mae = fit_and_forecast_sarimax(features, BIDDING_TIME, TARGET_DAY_END)
-    plot_price_forecast(eval_bidding).save("2_price_forecast.png", dpi=150)
-    
-    exp_profit, dispatch = optimize_bess_dispatch(eval_bidding["Forecast"].to_numpy(), "Pipeline")
-    plot_battery_dispatch(dispatch, eval_bidding).save("3_battery_dispatch.png", dpi=150)
-    
-    print(f"Pipeline complete! MAE: {mae:.2f}, Expected Profit: {exp_profit:,.2f} DKK")
 
 # %%
 if __name__ == "__main__":
