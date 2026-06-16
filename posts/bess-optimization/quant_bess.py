@@ -1,8 +1,17 @@
-# %%
-"""
-Quantitative BESS Optimization and Spot Price Forecasting 
+# ---
+# title: "Algorithmic Day-Ahead BESS Optimization"
+# description: "Forecasting wholesale electricity prices using SARIMAX and optimizing physical dispatch for a 10 MW / 20 MWh Battery Energy Storage System (BESS) using Mixed-Integer Linear Programming."
+# date: "2026-06-16"
+# image: "3_battery_dispatch.png"
+# draft: false
+# format:
+#   html:
+#     code-fold: true
+# jupyter: python3
+# ---
 
-"""
+# %% [markdown]
+# # Quantitative BESS Optimization and Spot Price Forecasting
 
 import sys
 import time
