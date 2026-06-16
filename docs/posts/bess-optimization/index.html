@@ -197,7 +197,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <section id="quantitative-bess-optimization-and-spot-price-forecasting---extremely-work-in-progress" class="level1">
 <h1>Quantitative BESS Optimization and Spot Price Forecasting - Extremely work in progress</h1>
-<div id="c7a3f0ae" class="cell" data-execution_count="1">
+<div id="88590dc0" class="cell" data-execution_count="1">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sys</span>
@@ -210,12 +210,10 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> statsmodels.tsa.statespace.sarimax <span class="im">import</span> SARIMAX</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pulp</span>
 <span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib</span>
-<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> <span class="op">*</span></span>
-<span id="cb1-12"><a href="#cb1-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb1-13"><a href="#cb1-13" aria-hidden="true" tabindex="-1"></a><span class="co"># matplotlib.use('Agg')</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb1-11"><a href="#cb1-11" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> plotnine <span class="im">import</span> <span class="op">*</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="1bf51086" class="cell" data-execution_count="2">
+<div id="1fcb3cb6" class="cell" data-execution_count="2">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb2"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a>BIDDING_TIME <span class="op">=</span> <span class="st">"2026-02-27 12:00:00"</span></span>
@@ -223,7 +221,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a>TARGET_DAY_END <span class="op">=</span> <span class="st">"2026-02-28 23:00:00"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="6718503c" class="cell" data-execution_count="3">
+<div id="f61c976e" class="cell" data-execution_count="3">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
@@ -231,185 +229,172 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
 <span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fetch_dk2_spot_prices(start_date: <span class="bu">str</span>, end_date: <span class="bu">str</span>) <span class="op">-&gt;</span> pl.DataFrame:</span>
-<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Fetches spot price records for DK2 price area from Energinet API."""</span></span>
-<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    url <span class="op">=</span> <span class="st">'https://api.energidataservice.dk/dataset/DayAheadPrices'</span></span>
-<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> {</span>
-<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">'start'</span>: start_date.replace(<span class="st">' '</span>, <span class="st">'T'</span>),</span>
-<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">'end'</span>: end_date.replace(<span class="st">' '</span>, <span class="st">'T'</span>),</span>
-<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">'filter'</span>: <span class="st">'{"PriceArea":["DK2"]}'</span>, </span>
-<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">'sort'</span>: <span class="st">'TimeDK ASC'</span>,</span>
-<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>        <span class="st">'limit'</span>: <span class="dv">10000</span> </span>
-<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> requests.get(url, params<span class="op">=</span>params)</span>
-<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    response.raise_for_status()</span>
-<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    records <span class="op">=</span> response.json().get(<span class="st">'records'</span>, [])</span>
-<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
-<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        pl.DataFrame(records)</span>
-<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>        .select([</span>
-<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>            pl.col(<span class="st">"TimeDK"</span>).<span class="bu">str</span>.to_datetime().alias(<span class="st">"HourDK"</span>),</span>
-<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>            pl.col(<span class="st">"DayAheadPriceDKK"</span>).cast(pl.Float64).alias(<span class="st">"SpotPriceDKK"</span>)</span>
-<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>        ])</span>
-<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>        .sort(<span class="st">"HourDK"</span>)</span>
-<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fetch_dk2_weather(start_date: <span class="bu">str</span>, end_date: <span class="bu">str</span>) <span class="op">-&gt;</span> pl.DataFrame:</span>
-<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Fetches weather covariates for Copenhagen from Open-Meteo Archive."""</span></span>
-<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>    url <span class="op">=</span> <span class="st">"https://archive-api.open-meteo.com/v1/archive"</span></span>
-<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> {</span>
-<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>        <span class="st">"latitude"</span>: LATITUDE,</span>
-<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        <span class="st">"longitude"</span>: LONGITUDE,</span>
-<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>        <span class="st">"start_date"</span>: start_date.split(<span class="st">'T'</span>)[<span class="dv">0</span>],</span>
-<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>        <span class="st">"end_date"</span>: end_date.split(<span class="st">'T'</span>)[<span class="dv">0</span>],</span>
-<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>        <span class="st">"hourly"</span>: <span class="st">"temperature_2m,wind_speed_10m,shortwave_radiation"</span>,</span>
-<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>        <span class="st">"timezone"</span>: <span class="st">"Europe/Berlin"</span></span>
-<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    }</span>
-<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> requests.get(url, params<span class="op">=</span>params)</span>
-<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    response.raise_for_status()</span>
-<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>    hourly <span class="op">=</span> response.json().get(<span class="st">'hourly'</span>, {})</span>
-<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pl.DataFrame({</span>
-<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>        <span class="st">"HourDK"</span>: hourly.get(<span class="st">"time"</span>),</span>
-<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Temp_C"</span>: hourly.get(<span class="st">"temperature_2m"</span>),</span>
-<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>        <span class="st">"WindSpeed_ms"</span>: hourly.get(<span class="st">"wind_speed_10m"</span>),</span>
-<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Solar_Wm2"</span>: hourly.get(<span class="st">"shortwave_radiation"</span>)</span>
-<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    }).with_columns(</span>
-<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a>        pl.col(<span class="st">"HourDK"</span>).<span class="bu">str</span>.to_datetime()</span>
-<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a>    ).sort(<span class="st">"HourDK"</span>)</span>
-<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> preprocess_data(df_price: pl.DataFrame, df_weather: pl.DataFrame) <span class="op">-&gt;</span> pl.DataFrame:</span>
-<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Resamples prices to hourly, joins with weather, and creates time features."""</span></span>
-<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>    df_price_hourly <span class="op">=</span> (</span>
-<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>        df_price</span>
-<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>        .group_by_dynamic(<span class="st">"HourDK"</span>, every<span class="op">=</span><span class="st">"1h"</span>)</span>
-<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>        .agg(pl.col(<span class="st">"SpotPriceDKK"</span>).mean())</span>
-<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>    df_merged <span class="op">=</span> (</span>
-<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>        df_price_hourly</span>
-<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>        .join(df_weather, on<span class="op">=</span><span class="st">"HourDK"</span>, how<span class="op">=</span><span class="st">"left"</span>)</span>
-<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>        .interpolate()</span>
-<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>        .fill_null(strategy<span class="op">=</span><span class="st">"forward"</span>)</span>
-<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>        .fill_null(strategy<span class="op">=</span><span class="st">"backward"</span>)</span>
-<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
-<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>        df_merged</span>
-<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>        .with_columns([</span>
-<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>            pl.col(<span class="st">"HourDK"</span>).dt.hour().alias(<span class="st">"hour"</span>),</span>
-<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>            pl.col(<span class="st">"HourDK"</span>).dt.weekday().alias(<span class="st">"weekday"</span>)</span>
-<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>        ])</span>
-<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>        .with_columns([</span>
-<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>            (pl.col(<span class="st">"hour"</span>) <span class="op">==</span> h).cast(pl.Float64).alias(<span class="ss">f"hour_</span><span class="sc">{</span>h<span class="sc">}</span><span class="ss">"</span>) <span class="cf">for</span> h <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">24</span>)</span>
-<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>        ] <span class="op">+</span> [</span>
-<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a>            (pl.col(<span class="st">"weekday"</span>) <span class="op">==</span> w).cast(pl.Float64).alias(<span class="ss">f"weekday_</span><span class="sc">{</span>w<span class="sc">}</span><span class="ss">"</span>) <span class="cf">for</span> w <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">7</span>)</span>
-<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a>        ])</span>
-<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_price_forecast(df_eval_bidding: pl.DataFrame):</span>
-<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Visualizes the 36h-ahead spot price forecast with 95% confidence intervals."""</span></span>
-<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
-<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>        ggplot(df_eval_bidding.to_pandas(), aes(x<span class="op">=</span><span class="st">"HourDK"</span>))</span>
-<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_ribbon(aes(ymin<span class="op">=</span><span class="st">"Lower_CI"</span>, ymax<span class="op">=</span><span class="st">"Upper_CI"</span>, fill<span class="op">=</span><span class="st">'"95% Confidence Interval"'</span>), alpha<span class="op">=</span><span class="fl">0.15</span>)</span>
-<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_line(aes(y<span class="op">=</span><span class="st">"Actual"</span>, color<span class="op">=</span><span class="st">'"Actual Price"'</span>), size<span class="op">=</span><span class="fl">1.2</span>)</span>
-<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_line(aes(y<span class="op">=</span><span class="st">"Forecast"</span>, color<span class="op">=</span><span class="st">'"Forecasted Price"'</span>), linetype<span class="op">=</span><span class="st">"dashed"</span>, size<span class="op">=</span><span class="fl">1.2</span>)</span>
-<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> scale_color_manual(name<span class="op">=</span><span class="st">"Spot Price"</span>, values<span class="op">=</span>{<span class="st">"Actual Price"</span>: <span class="st">"black"</span>, <span class="st">"Forecasted Price"</span>: <span class="st">"red"</span>})</span>
-<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> scale_fill_manual(name<span class="op">=</span><span class="st">"Uncertainty"</span>, values<span class="op">=</span>{<span class="st">"95% Confidence Interval"</span>: <span class="st">"lightblue"</span>})</span>
-<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> theme_minimal()</span>
-<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> theme(</span>
-<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>            text<span class="op">=</span>element_text(family<span class="op">=</span><span class="st">"sans-serif"</span>, color<span class="op">=</span><span class="st">"black"</span>),</span>
-<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>            plot_title<span class="op">=</span>element_text(face<span class="op">=</span><span class="st">"bold"</span>, size<span class="op">=</span><span class="dv">12</span>, margin<span class="op">=</span>{<span class="st">"b"</span>: <span class="dv">10</span>}),</span>
-<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>            plot_background<span class="op">=</span>element_rect(fill<span class="op">=</span><span class="st">"white"</span>, color<span class="op">=</span><span class="va">None</span>),</span>
-<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>            legend_position<span class="op">=</span><span class="st">"top"</span>,</span>
-<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>            figure_size<span class="op">=</span>(<span class="dv">9</span>, <span class="fl">4.5</span>)</span>
-<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> labs(</span>
-<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>            title<span class="op">=</span><span class="st">"Day-Ahead Spot Price Forecast with 95% Prediction Intervals"</span>,</span>
-<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a>            x<span class="op">=</span><span class="st">"Hour of Day"</span>,</span>
-<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a>            y<span class="op">=</span><span class="st">"Price (DKK / MWh)"</span></span>
-<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> optimize_bess_dispatch(prices: np.ndarray, scenario_name: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">float</span>, pl.DataFrame]:</span>
-<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""MILP formulation to optimize battery charge/discharge schedule."""</span></span>
-<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>    P_MAX <span class="op">=</span> <span class="fl">10.0</span></span>
-<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>    E_MAX <span class="op">=</span> <span class="fl">20.0</span></span>
-<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>    ETA <span class="op">=</span> <span class="fl">0.95</span></span>
-<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>    SOC_START <span class="op">=</span> <span class="fl">10.0</span></span>
-<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>    SOC_MIN <span class="op">=</span> <span class="fl">0.0</span></span>
-<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>    SOC_MAX <span class="op">=</span> <span class="fl">20.0</span></span>
-<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>    T <span class="op">=</span> <span class="bu">len</span>(prices)</span>
-<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>    prob <span class="op">=</span> pulp.LpProblem(<span class="ss">f"BESS_MILP_</span><span class="sc">{</span>scenario_name<span class="sc">}</span><span class="ss">"</span>, pulp.LpMaximize)</span>
-<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>    C <span class="op">=</span> pulp.LpVariable.dicts(<span class="st">"Charge_MW"</span>, <span class="bu">range</span>(T), lowBound<span class="op">=</span><span class="dv">0</span>, upBound<span class="op">=</span>P_MAX)</span>
-<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>    D <span class="op">=</span> pulp.LpVariable.dicts(<span class="st">"Discharge_MW"</span>, <span class="bu">range</span>(T), lowBound<span class="op">=</span><span class="dv">0</span>, upBound<span class="op">=</span>P_MAX)</span>
-<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>    u_c <span class="op">=</span> pulp.LpVariable.dicts(<span class="st">"Is_Charging"</span>, <span class="bu">range</span>(T), cat<span class="op">=</span><span class="st">"Binary"</span>)</span>
-<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>    u_d <span class="op">=</span> pulp.LpVariable.dicts(<span class="st">"Is_Discharging"</span>, <span class="bu">range</span>(T), cat<span class="op">=</span><span class="st">"Binary"</span>)</span>
-<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>    SoC <span class="op">=</span> pulp.LpVariable.dicts(<span class="st">"SoC_MWh"</span>, <span class="bu">range</span>(T), lowBound<span class="op">=</span>SOC_MIN, upBound<span class="op">=</span>SOC_MAX)</span>
-<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>    eta_one_way <span class="op">=</span> ETA <span class="op">**</span> <span class="fl">0.5</span></span>
-<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>    prob <span class="op">+=</span> pulp.lpSum([prices[t] <span class="op">*</span> (D[t] <span class="op">-</span> C[t]) <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T)])</span>
-<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T):</span>
-<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a>        prob <span class="op">+=</span> u_c[t] <span class="op">+</span> u_d[t] <span class="op">&lt;=</span> <span class="dv">1</span></span>
-<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>        prob <span class="op">+=</span> C[t] <span class="op">&lt;=</span> P_MAX <span class="op">*</span> u_c[t]</span>
-<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a>        prob <span class="op">+=</span> D[t] <span class="op">&lt;=</span> P_MAX <span class="op">*</span> u_d[t]</span>
-<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a>        </span>
-<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> t <span class="op">==</span> <span class="dv">0</span>:</span>
-<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>            prob <span class="op">+=</span> SoC[t] <span class="op">==</span> SOC_START <span class="op">+</span> (C[t] <span class="op">*</span> eta_one_way) <span class="op">-</span> (D[t] <span class="op">/</span> eta_one_way)</span>
-<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
-<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>            prob <span class="op">+=</span> SoC[t] <span class="op">==</span> SoC[t<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> (C[t] <span class="op">*</span> eta_one_way) <span class="op">-</span> (D[t] <span class="op">/</span> eta_one_way)</span>
-<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>            </span>
-<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>    prob.solve(pulp.PULP_CBC_CMD(msg<span class="op">=</span><span class="va">False</span>))</span>
-<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>    dispatch_df <span class="op">=</span> pl.DataFrame({</span>
-<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Hour"</span>: <span class="bu">list</span>(<span class="bu">range</span>(T)),</span>
-<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Price_DKK"</span>: prices,</span>
-<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Charge_MW"</span>: [C[t].varValue <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T)],</span>
-<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Discharge_MW"</span>: [D[t].varValue <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T)],</span>
-<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a>        <span class="st">"SoC_MWh"</span>: [SoC[t].varValue <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T)]</span>
-<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>    })</span>
-<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pulp.value(prob.objective), dispatch_df</span>
-<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_battery_dispatch(df_dispatch: pl.DataFrame, df_eval: pl.DataFrame):</span>
-<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>    <span class="co">"""Plots the optimal BESS schedule (bars) against State of Charge (line/area)."""</span></span>
-<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a>    df_dispatch_plot <span class="op">=</span> df_dispatch.with_columns(</span>
-<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>        HourDK<span class="op">=</span>df_eval[<span class="st">"HourDK"</span>],</span>
-<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>        Net_Power_MW<span class="op">=</span>pl.col(<span class="st">"Discharge_MW"</span>) <span class="op">-</span> pl.col(<span class="st">"Charge_MW"</span>)</span>
-<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>    ).to_pandas().melt(</span>
-<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>        id_vars<span class="op">=</span>[<span class="st">"HourDK"</span>, <span class="st">"Price_DKK"</span>],</span>
-<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>        value_vars<span class="op">=</span>[<span class="st">"Net_Power_MW"</span>, <span class="st">"SoC_MWh"</span>],</span>
-<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>        var_name<span class="op">=</span><span class="st">"Metric"</span>,</span>
-<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>        value_name<span class="op">=</span><span class="st">"Value"</span></span>
-<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>    )</span>
-<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>    </span>
-<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
-<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>        ggplot(df_dispatch_plot, aes(x<span class="op">=</span><span class="st">"HourDK"</span>, y<span class="op">=</span><span class="st">"Value"</span>))</span>
-<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_bar(data<span class="op">=</span>df_dispatch_plot[df_dispatch_plot[<span class="st">"Metric"</span>] <span class="op">==</span> <span class="st">"Net_Power_MW"</span>], stat<span class="op">=</span><span class="st">"identity"</span>, fill<span class="op">=</span><span class="st">"blue"</span>, alpha<span class="op">=</span><span class="fl">0.85</span>)</span>
-<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_area(data<span class="op">=</span>df_dispatch_plot[df_dispatch_plot[<span class="st">"Metric"</span>] <span class="op">==</span> <span class="st">"SoC_MWh"</span>], fill<span class="op">=</span><span class="st">"green"</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
-<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_line(data<span class="op">=</span>df_dispatch_plot[df_dispatch_plot[<span class="st">"Metric"</span>] <span class="op">==</span> <span class="st">"SoC_MWh"</span>], color<span class="op">=</span><span class="st">"green"</span>, size<span class="op">=</span><span class="fl">1.2</span>)</span>
-<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> facet_wrap(<span class="st">"~Metric"</span>, ncol<span class="op">=</span><span class="dv">1</span>, scales<span class="op">=</span><span class="st">"free_y"</span>, labeller<span class="op">=</span>as_labeller({</span>
-<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Net_Power_MW"</span>: <span class="st">"Battery Active Dispatch (Charge/Discharge Power, MW)"</span>,</span>
-<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>            <span class="st">"SoC_MWh"</span>: <span class="st">"State of Charge (SoC, MWh)"</span></span>
-<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>        }))</span>
-<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> theme_minimal()</span>
-<span id="cb3-169"><a href="#cb3-169" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> theme(</span>
-<span id="cb3-170"><a href="#cb3-170" aria-hidden="true" tabindex="-1"></a>            text<span class="op">=</span>element_text(family<span class="op">=</span><span class="st">"sans-serif"</span>, color<span class="op">=</span><span class="st">"black"</span>),</span>
-<span id="cb3-171"><a href="#cb3-171" aria-hidden="true" tabindex="-1"></a>            strip_text<span class="op">=</span>element_text(face<span class="op">=</span><span class="st">"bold"</span>, size<span class="op">=</span><span class="dv">10</span>),</span>
-<span id="cb3-172"><a href="#cb3-172" aria-hidden="true" tabindex="-1"></a>            plot_title<span class="op">=</span>element_text(face<span class="op">=</span><span class="st">"bold"</span>, size<span class="op">=</span><span class="dv">12</span>, margin<span class="op">=</span>{<span class="st">"b"</span>: <span class="dv">10</span>}),</span>
-<span id="cb3-173"><a href="#cb3-173" aria-hidden="true" tabindex="-1"></a>            plot_background<span class="op">=</span>element_rect(fill<span class="op">=</span><span class="st">"white"</span>, color<span class="op">=</span><span class="va">None</span>),</span>
-<span id="cb3-174"><a href="#cb3-174" aria-hidden="true" tabindex="-1"></a>            figure_size<span class="op">=</span>(<span class="dv">9</span>, <span class="dv">6</span>)</span>
-<span id="cb3-175"><a href="#cb3-175" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-176"><a href="#cb3-176" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> labs(</span>
-<span id="cb3-177"><a href="#cb3-177" aria-hidden="true" tabindex="-1"></a>            title<span class="op">=</span><span class="st">"Optimal BESS Dispatch Schedule &amp; State of Charge (SoC)"</span>,</span>
-<span id="cb3-178"><a href="#cb3-178" aria-hidden="true" tabindex="-1"></a>            x<span class="op">=</span><span class="st">"Hour of Day"</span>,</span>
-<span id="cb3-179"><a href="#cb3-179" aria-hidden="true" tabindex="-1"></a>            y<span class="op">=</span><span class="st">"Value"</span></span>
-<span id="cb3-180"><a href="#cb3-180" aria-hidden="true" tabindex="-1"></a>        )</span>
-<span id="cb3-181"><a href="#cb3-181" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a>    url <span class="op">=</span> <span class="st">'https://api.energidataservice.dk/dataset/DayAheadPrices'</span></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> {</span>
+<span id="cb3-8"><a href="#cb3-8" aria-hidden="true" tabindex="-1"></a>        <span class="st">'start'</span>: start_date.replace(<span class="st">' '</span>, <span class="st">'T'</span>),</span>
+<span id="cb3-9"><a href="#cb3-9" aria-hidden="true" tabindex="-1"></a>        <span class="st">'end'</span>: end_date.replace(<span class="st">' '</span>, <span class="st">'T'</span>),</span>
+<span id="cb3-10"><a href="#cb3-10" aria-hidden="true" tabindex="-1"></a>        <span class="st">'filter'</span>: <span class="st">'{"PriceArea":["DK2"]}'</span>, </span>
+<span id="cb3-11"><a href="#cb3-11" aria-hidden="true" tabindex="-1"></a>        <span class="st">'sort'</span>: <span class="st">'TimeDK ASC'</span>,</span>
+<span id="cb3-12"><a href="#cb3-12" aria-hidden="true" tabindex="-1"></a>        <span class="st">'limit'</span>: <span class="dv">10000</span> </span>
+<span id="cb3-13"><a href="#cb3-13" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-14"><a href="#cb3-14" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> requests.get(url, params<span class="op">=</span>params)</span>
+<span id="cb3-15"><a href="#cb3-15" aria-hidden="true" tabindex="-1"></a>    response.raise_for_status()</span>
+<span id="cb3-16"><a href="#cb3-16" aria-hidden="true" tabindex="-1"></a>    records <span class="op">=</span> response.json().get(<span class="st">'records'</span>, [])</span>
+<span id="cb3-17"><a href="#cb3-17" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-18"><a href="#cb3-18" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb3-19"><a href="#cb3-19" aria-hidden="true" tabindex="-1"></a>        pl.DataFrame(records)</span>
+<span id="cb3-20"><a href="#cb3-20" aria-hidden="true" tabindex="-1"></a>        .select([</span>
+<span id="cb3-21"><a href="#cb3-21" aria-hidden="true" tabindex="-1"></a>            pl.col(<span class="st">"TimeDK"</span>).<span class="bu">str</span>.to_datetime().alias(<span class="st">"HourDK"</span>),</span>
+<span id="cb3-22"><a href="#cb3-22" aria-hidden="true" tabindex="-1"></a>            pl.col(<span class="st">"DayAheadPriceDKK"</span>).cast(pl.Float64).alias(<span class="st">"SpotPriceDKK"</span>)</span>
+<span id="cb3-23"><a href="#cb3-23" aria-hidden="true" tabindex="-1"></a>        ])</span>
+<span id="cb3-24"><a href="#cb3-24" aria-hidden="true" tabindex="-1"></a>        .sort(<span class="st">"HourDK"</span>)</span>
+<span id="cb3-25"><a href="#cb3-25" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-26"><a href="#cb3-26" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-27"><a href="#cb3-27" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> fetch_dk2_weather(start_date: <span class="bu">str</span>, end_date: <span class="bu">str</span>) <span class="op">-&gt;</span> pl.DataFrame:</span>
+<span id="cb3-28"><a href="#cb3-28" aria-hidden="true" tabindex="-1"></a>    url <span class="op">=</span> <span class="st">"https://archive-api.open-meteo.com/v1/archive"</span></span>
+<span id="cb3-29"><a href="#cb3-29" aria-hidden="true" tabindex="-1"></a>    params <span class="op">=</span> {</span>
+<span id="cb3-30"><a href="#cb3-30" aria-hidden="true" tabindex="-1"></a>        <span class="st">"latitude"</span>: LATITUDE,</span>
+<span id="cb3-31"><a href="#cb3-31" aria-hidden="true" tabindex="-1"></a>        <span class="st">"longitude"</span>: LONGITUDE,</span>
+<span id="cb3-32"><a href="#cb3-32" aria-hidden="true" tabindex="-1"></a>        <span class="st">"start_date"</span>: start_date.split(<span class="st">'T'</span>)[<span class="dv">0</span>],</span>
+<span id="cb3-33"><a href="#cb3-33" aria-hidden="true" tabindex="-1"></a>        <span class="st">"end_date"</span>: end_date.split(<span class="st">'T'</span>)[<span class="dv">0</span>],</span>
+<span id="cb3-34"><a href="#cb3-34" aria-hidden="true" tabindex="-1"></a>        <span class="st">"hourly"</span>: <span class="st">"temperature_2m,wind_speed_10m,shortwave_radiation"</span>,</span>
+<span id="cb3-35"><a href="#cb3-35" aria-hidden="true" tabindex="-1"></a>        <span class="st">"timezone"</span>: <span class="st">"Europe/Berlin"</span></span>
+<span id="cb3-36"><a href="#cb3-36" aria-hidden="true" tabindex="-1"></a>    }</span>
+<span id="cb3-37"><a href="#cb3-37" aria-hidden="true" tabindex="-1"></a>    response <span class="op">=</span> requests.get(url, params<span class="op">=</span>params)</span>
+<span id="cb3-38"><a href="#cb3-38" aria-hidden="true" tabindex="-1"></a>    response.raise_for_status()</span>
+<span id="cb3-39"><a href="#cb3-39" aria-hidden="true" tabindex="-1"></a>    hourly <span class="op">=</span> response.json().get(<span class="st">'hourly'</span>, {})</span>
+<span id="cb3-40"><a href="#cb3-40" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-41"><a href="#cb3-41" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pl.DataFrame({</span>
+<span id="cb3-42"><a href="#cb3-42" aria-hidden="true" tabindex="-1"></a>        <span class="st">"HourDK"</span>: hourly.get(<span class="st">"time"</span>),</span>
+<span id="cb3-43"><a href="#cb3-43" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Temp_C"</span>: hourly.get(<span class="st">"temperature_2m"</span>),</span>
+<span id="cb3-44"><a href="#cb3-44" aria-hidden="true" tabindex="-1"></a>        <span class="st">"WindSpeed_ms"</span>: hourly.get(<span class="st">"wind_speed_10m"</span>),</span>
+<span id="cb3-45"><a href="#cb3-45" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Solar_Wm2"</span>: hourly.get(<span class="st">"shortwave_radiation"</span>)</span>
+<span id="cb3-46"><a href="#cb3-46" aria-hidden="true" tabindex="-1"></a>    }).with_columns(</span>
+<span id="cb3-47"><a href="#cb3-47" aria-hidden="true" tabindex="-1"></a>        pl.col(<span class="st">"HourDK"</span>).<span class="bu">str</span>.to_datetime()</span>
+<span id="cb3-48"><a href="#cb3-48" aria-hidden="true" tabindex="-1"></a>    ).sort(<span class="st">"HourDK"</span>)</span>
+<span id="cb3-49"><a href="#cb3-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-50"><a href="#cb3-50" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> preprocess_data(df_price: pl.DataFrame, df_weather: pl.DataFrame) <span class="op">-&gt;</span> pl.DataFrame:</span>
+<span id="cb3-51"><a href="#cb3-51" aria-hidden="true" tabindex="-1"></a>    df_price_hourly <span class="op">=</span> (</span>
+<span id="cb3-52"><a href="#cb3-52" aria-hidden="true" tabindex="-1"></a>        df_price</span>
+<span id="cb3-53"><a href="#cb3-53" aria-hidden="true" tabindex="-1"></a>        .group_by_dynamic(<span class="st">"HourDK"</span>, every<span class="op">=</span><span class="st">"1h"</span>)</span>
+<span id="cb3-54"><a href="#cb3-54" aria-hidden="true" tabindex="-1"></a>        .agg(pl.col(<span class="st">"SpotPriceDKK"</span>).mean())</span>
+<span id="cb3-55"><a href="#cb3-55" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-56"><a href="#cb3-56" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-57"><a href="#cb3-57" aria-hidden="true" tabindex="-1"></a>    df_merged <span class="op">=</span> (</span>
+<span id="cb3-58"><a href="#cb3-58" aria-hidden="true" tabindex="-1"></a>        df_price_hourly</span>
+<span id="cb3-59"><a href="#cb3-59" aria-hidden="true" tabindex="-1"></a>        .join(df_weather, on<span class="op">=</span><span class="st">"HourDK"</span>, how<span class="op">=</span><span class="st">"left"</span>)</span>
+<span id="cb3-60"><a href="#cb3-60" aria-hidden="true" tabindex="-1"></a>        .interpolate()</span>
+<span id="cb3-61"><a href="#cb3-61" aria-hidden="true" tabindex="-1"></a>        .fill_null(strategy<span class="op">=</span><span class="st">"forward"</span>)</span>
+<span id="cb3-62"><a href="#cb3-62" aria-hidden="true" tabindex="-1"></a>        .fill_null(strategy<span class="op">=</span><span class="st">"backward"</span>)</span>
+<span id="cb3-63"><a href="#cb3-63" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-64"><a href="#cb3-64" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-65"><a href="#cb3-65" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb3-66"><a href="#cb3-66" aria-hidden="true" tabindex="-1"></a>        df_merged</span>
+<span id="cb3-67"><a href="#cb3-67" aria-hidden="true" tabindex="-1"></a>        .with_columns([</span>
+<span id="cb3-68"><a href="#cb3-68" aria-hidden="true" tabindex="-1"></a>            pl.col(<span class="st">"HourDK"</span>).dt.hour().alias(<span class="st">"hour"</span>),</span>
+<span id="cb3-69"><a href="#cb3-69" aria-hidden="true" tabindex="-1"></a>            pl.col(<span class="st">"HourDK"</span>).dt.weekday().alias(<span class="st">"weekday"</span>)</span>
+<span id="cb3-70"><a href="#cb3-70" aria-hidden="true" tabindex="-1"></a>        ])</span>
+<span id="cb3-71"><a href="#cb3-71" aria-hidden="true" tabindex="-1"></a>        .with_columns([</span>
+<span id="cb3-72"><a href="#cb3-72" aria-hidden="true" tabindex="-1"></a>            (pl.col(<span class="st">"hour"</span>) <span class="op">==</span> h).cast(pl.Float64).alias(<span class="ss">f"hour_</span><span class="sc">{</span>h<span class="sc">}</span><span class="ss">"</span>) <span class="cf">for</span> h <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">24</span>)</span>
+<span id="cb3-73"><a href="#cb3-73" aria-hidden="true" tabindex="-1"></a>        ] <span class="op">+</span> [</span>
+<span id="cb3-74"><a href="#cb3-74" aria-hidden="true" tabindex="-1"></a>            (pl.col(<span class="st">"weekday"</span>) <span class="op">==</span> w).cast(pl.Float64).alias(<span class="ss">f"weekday_</span><span class="sc">{</span>w<span class="sc">}</span><span class="ss">"</span>) <span class="cf">for</span> w <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1</span>, <span class="dv">7</span>)</span>
+<span id="cb3-75"><a href="#cb3-75" aria-hidden="true" tabindex="-1"></a>        ])</span>
+<span id="cb3-76"><a href="#cb3-76" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-77"><a href="#cb3-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-78"><a href="#cb3-78" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_price_forecast(df_eval_bidding: pl.DataFrame):</span>
+<span id="cb3-79"><a href="#cb3-79" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb3-80"><a href="#cb3-80" aria-hidden="true" tabindex="-1"></a>        ggplot(df_eval_bidding.to_pandas(), aes(x<span class="op">=</span><span class="st">"HourDK"</span>))</span>
+<span id="cb3-81"><a href="#cb3-81" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_ribbon(aes(ymin<span class="op">=</span><span class="st">"Lower_CI"</span>, ymax<span class="op">=</span><span class="st">"Upper_CI"</span>, fill<span class="op">=</span><span class="st">'"95% Confidence Interval"'</span>), alpha<span class="op">=</span><span class="fl">0.15</span>)</span>
+<span id="cb3-82"><a href="#cb3-82" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_line(aes(y<span class="op">=</span><span class="st">"Actual"</span>, color<span class="op">=</span><span class="st">'"Actual Price"'</span>), size<span class="op">=</span><span class="fl">1.2</span>)</span>
+<span id="cb3-83"><a href="#cb3-83" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_line(aes(y<span class="op">=</span><span class="st">"Forecast"</span>, color<span class="op">=</span><span class="st">'"Forecasted Price"'</span>), linetype<span class="op">=</span><span class="st">"dashed"</span>, size<span class="op">=</span><span class="fl">1.2</span>)</span>
+<span id="cb3-84"><a href="#cb3-84" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> scale_color_manual(name<span class="op">=</span><span class="st">"Spot Price"</span>, values<span class="op">=</span>{<span class="st">"Actual Price"</span>: <span class="st">"black"</span>, <span class="st">"Forecasted Price"</span>: <span class="st">"red"</span>})</span>
+<span id="cb3-85"><a href="#cb3-85" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> scale_fill_manual(name<span class="op">=</span><span class="st">"Uncertainty"</span>, values<span class="op">=</span>{<span class="st">"95% Confidence Interval"</span>: <span class="st">"lightblue"</span>})</span>
+<span id="cb3-86"><a href="#cb3-86" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> theme_minimal()</span>
+<span id="cb3-87"><a href="#cb3-87" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> theme(</span>
+<span id="cb3-88"><a href="#cb3-88" aria-hidden="true" tabindex="-1"></a>            text<span class="op">=</span>element_text(family<span class="op">=</span><span class="st">"sans-serif"</span>, color<span class="op">=</span><span class="st">"black"</span>),</span>
+<span id="cb3-89"><a href="#cb3-89" aria-hidden="true" tabindex="-1"></a>            plot_title<span class="op">=</span>element_text(face<span class="op">=</span><span class="st">"bold"</span>, size<span class="op">=</span><span class="dv">12</span>, margin<span class="op">=</span>{<span class="st">"b"</span>: <span class="dv">10</span>}),</span>
+<span id="cb3-90"><a href="#cb3-90" aria-hidden="true" tabindex="-1"></a>            plot_background<span class="op">=</span>element_rect(fill<span class="op">=</span><span class="st">"white"</span>, color<span class="op">=</span><span class="va">None</span>),</span>
+<span id="cb3-91"><a href="#cb3-91" aria-hidden="true" tabindex="-1"></a>            legend_position<span class="op">=</span><span class="st">"top"</span>,</span>
+<span id="cb3-92"><a href="#cb3-92" aria-hidden="true" tabindex="-1"></a>            figure_size<span class="op">=</span>(<span class="dv">9</span>, <span class="fl">4.5</span>)</span>
+<span id="cb3-93"><a href="#cb3-93" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-94"><a href="#cb3-94" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> labs(</span>
+<span id="cb3-95"><a href="#cb3-95" aria-hidden="true" tabindex="-1"></a>            title<span class="op">=</span><span class="st">"Day-Ahead Spot Price Forecast with 95% Prediction Intervals"</span>,</span>
+<span id="cb3-96"><a href="#cb3-96" aria-hidden="true" tabindex="-1"></a>            x<span class="op">=</span><span class="st">"Hour of Day"</span>,</span>
+<span id="cb3-97"><a href="#cb3-97" aria-hidden="true" tabindex="-1"></a>            y<span class="op">=</span><span class="st">"Price (DKK / MWh)"</span></span>
+<span id="cb3-98"><a href="#cb3-98" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-99"><a href="#cb3-99" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-100"><a href="#cb3-100" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-101"><a href="#cb3-101" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> optimize_bess_dispatch(prices: np.ndarray, scenario_name: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">tuple</span>[<span class="bu">float</span>, pl.DataFrame]:</span>
+<span id="cb3-102"><a href="#cb3-102" aria-hidden="true" tabindex="-1"></a>    P_MAX <span class="op">=</span> <span class="fl">10.0</span></span>
+<span id="cb3-103"><a href="#cb3-103" aria-hidden="true" tabindex="-1"></a>    E_MAX <span class="op">=</span> <span class="fl">20.0</span></span>
+<span id="cb3-104"><a href="#cb3-104" aria-hidden="true" tabindex="-1"></a>    ETA <span class="op">=</span> <span class="fl">0.95</span></span>
+<span id="cb3-105"><a href="#cb3-105" aria-hidden="true" tabindex="-1"></a>    SOC_START <span class="op">=</span> <span class="fl">10.0</span></span>
+<span id="cb3-106"><a href="#cb3-106" aria-hidden="true" tabindex="-1"></a>    SOC_MIN <span class="op">=</span> <span class="fl">0.0</span></span>
+<span id="cb3-107"><a href="#cb3-107" aria-hidden="true" tabindex="-1"></a>    SOC_MAX <span class="op">=</span> <span class="fl">20.0</span></span>
+<span id="cb3-108"><a href="#cb3-108" aria-hidden="true" tabindex="-1"></a>    T <span class="op">=</span> <span class="bu">len</span>(prices)</span>
+<span id="cb3-109"><a href="#cb3-109" aria-hidden="true" tabindex="-1"></a>    prob <span class="op">=</span> pulp.LpProblem(<span class="ss">f"BESS_MILP_</span><span class="sc">{</span>scenario_name<span class="sc">}</span><span class="ss">"</span>, pulp.LpMaximize)</span>
+<span id="cb3-110"><a href="#cb3-110" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-111"><a href="#cb3-111" aria-hidden="true" tabindex="-1"></a>    C <span class="op">=</span> pulp.LpVariable.dicts(<span class="st">"Charge_MW"</span>, <span class="bu">range</span>(T), lowBound<span class="op">=</span><span class="dv">0</span>, upBound<span class="op">=</span>P_MAX)</span>
+<span id="cb3-112"><a href="#cb3-112" aria-hidden="true" tabindex="-1"></a>    D <span class="op">=</span> pulp.LpVariable.dicts(<span class="st">"Discharge_MW"</span>, <span class="bu">range</span>(T), lowBound<span class="op">=</span><span class="dv">0</span>, upBound<span class="op">=</span>P_MAX)</span>
+<span id="cb3-113"><a href="#cb3-113" aria-hidden="true" tabindex="-1"></a>    u_c <span class="op">=</span> pulp.LpVariable.dicts(<span class="st">"Is_Charging"</span>, <span class="bu">range</span>(T), cat<span class="op">=</span><span class="st">"Binary"</span>)</span>
+<span id="cb3-114"><a href="#cb3-114" aria-hidden="true" tabindex="-1"></a>    u_d <span class="op">=</span> pulp.LpVariable.dicts(<span class="st">"Is_Discharging"</span>, <span class="bu">range</span>(T), cat<span class="op">=</span><span class="st">"Binary"</span>)</span>
+<span id="cb3-115"><a href="#cb3-115" aria-hidden="true" tabindex="-1"></a>    SoC <span class="op">=</span> pulp.LpVariable.dicts(<span class="st">"SoC_MWh"</span>, <span class="bu">range</span>(T), lowBound<span class="op">=</span>SOC_MIN, upBound<span class="op">=</span>SOC_MAX)</span>
+<span id="cb3-116"><a href="#cb3-116" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-117"><a href="#cb3-117" aria-hidden="true" tabindex="-1"></a>    eta_one_way <span class="op">=</span> ETA <span class="op">**</span> <span class="fl">0.5</span></span>
+<span id="cb3-118"><a href="#cb3-118" aria-hidden="true" tabindex="-1"></a>    prob <span class="op">+=</span> pulp.lpSum([prices[t] <span class="op">*</span> (D[t] <span class="op">-</span> C[t]) <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T)])</span>
+<span id="cb3-119"><a href="#cb3-119" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-120"><a href="#cb3-120" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T):</span>
+<span id="cb3-121"><a href="#cb3-121" aria-hidden="true" tabindex="-1"></a>        prob <span class="op">+=</span> u_c[t] <span class="op">+</span> u_d[t] <span class="op">&lt;=</span> <span class="dv">1</span></span>
+<span id="cb3-122"><a href="#cb3-122" aria-hidden="true" tabindex="-1"></a>        prob <span class="op">+=</span> C[t] <span class="op">&lt;=</span> P_MAX <span class="op">*</span> u_c[t]</span>
+<span id="cb3-123"><a href="#cb3-123" aria-hidden="true" tabindex="-1"></a>        prob <span class="op">+=</span> D[t] <span class="op">&lt;=</span> P_MAX <span class="op">*</span> u_d[t]</span>
+<span id="cb3-124"><a href="#cb3-124" aria-hidden="true" tabindex="-1"></a>        </span>
+<span id="cb3-125"><a href="#cb3-125" aria-hidden="true" tabindex="-1"></a>        <span class="cf">if</span> t <span class="op">==</span> <span class="dv">0</span>:</span>
+<span id="cb3-126"><a href="#cb3-126" aria-hidden="true" tabindex="-1"></a>            prob <span class="op">+=</span> SoC[t] <span class="op">==</span> SOC_START <span class="op">+</span> (C[t] <span class="op">*</span> eta_one_way) <span class="op">-</span> (D[t] <span class="op">/</span> eta_one_way)</span>
+<span id="cb3-127"><a href="#cb3-127" aria-hidden="true" tabindex="-1"></a>        <span class="cf">else</span>:</span>
+<span id="cb3-128"><a href="#cb3-128" aria-hidden="true" tabindex="-1"></a>            prob <span class="op">+=</span> SoC[t] <span class="op">==</span> SoC[t<span class="op">-</span><span class="dv">1</span>] <span class="op">+</span> (C[t] <span class="op">*</span> eta_one_way) <span class="op">-</span> (D[t] <span class="op">/</span> eta_one_way)</span>
+<span id="cb3-129"><a href="#cb3-129" aria-hidden="true" tabindex="-1"></a>            </span>
+<span id="cb3-130"><a href="#cb3-130" aria-hidden="true" tabindex="-1"></a>    prob.solve(pulp.PULP_CBC_CMD(msg<span class="op">=</span><span class="va">False</span>))</span>
+<span id="cb3-131"><a href="#cb3-131" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-132"><a href="#cb3-132" aria-hidden="true" tabindex="-1"></a>    dispatch_df <span class="op">=</span> pl.DataFrame({</span>
+<span id="cb3-133"><a href="#cb3-133" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Hour"</span>: <span class="bu">list</span>(<span class="bu">range</span>(T)),</span>
+<span id="cb3-134"><a href="#cb3-134" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Price_DKK"</span>: prices,</span>
+<span id="cb3-135"><a href="#cb3-135" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Charge_MW"</span>: [C[t].varValue <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T)],</span>
+<span id="cb3-136"><a href="#cb3-136" aria-hidden="true" tabindex="-1"></a>        <span class="st">"Discharge_MW"</span>: [D[t].varValue <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T)],</span>
+<span id="cb3-137"><a href="#cb3-137" aria-hidden="true" tabindex="-1"></a>        <span class="st">"SoC_MWh"</span>: [SoC[t].varValue <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(T)]</span>
+<span id="cb3-138"><a href="#cb3-138" aria-hidden="true" tabindex="-1"></a>    })</span>
+<span id="cb3-139"><a href="#cb3-139" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-140"><a href="#cb3-140" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> pulp.value(prob.objective), dispatch_df</span>
+<span id="cb3-141"><a href="#cb3-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-142"><a href="#cb3-142" aria-hidden="true" tabindex="-1"></a><span class="kw">def</span> plot_battery_dispatch(df_dispatch: pl.DataFrame, df_eval: pl.DataFrame):</span>
+<span id="cb3-143"><a href="#cb3-143" aria-hidden="true" tabindex="-1"></a>    df_dispatch_plot <span class="op">=</span> df_dispatch.with_columns(</span>
+<span id="cb3-144"><a href="#cb3-144" aria-hidden="true" tabindex="-1"></a>        HourDK<span class="op">=</span>df_eval[<span class="st">"HourDK"</span>],</span>
+<span id="cb3-145"><a href="#cb3-145" aria-hidden="true" tabindex="-1"></a>        Net_Power_MW<span class="op">=</span>pl.col(<span class="st">"Discharge_MW"</span>) <span class="op">-</span> pl.col(<span class="st">"Charge_MW"</span>)</span>
+<span id="cb3-146"><a href="#cb3-146" aria-hidden="true" tabindex="-1"></a>    ).to_pandas().melt(</span>
+<span id="cb3-147"><a href="#cb3-147" aria-hidden="true" tabindex="-1"></a>        id_vars<span class="op">=</span>[<span class="st">"HourDK"</span>, <span class="st">"Price_DKK"</span>],</span>
+<span id="cb3-148"><a href="#cb3-148" aria-hidden="true" tabindex="-1"></a>        value_vars<span class="op">=</span>[<span class="st">"Net_Power_MW"</span>, <span class="st">"SoC_MWh"</span>],</span>
+<span id="cb3-149"><a href="#cb3-149" aria-hidden="true" tabindex="-1"></a>        var_name<span class="op">=</span><span class="st">"Metric"</span>,</span>
+<span id="cb3-150"><a href="#cb3-150" aria-hidden="true" tabindex="-1"></a>        value_name<span class="op">=</span><span class="st">"Value"</span></span>
+<span id="cb3-151"><a href="#cb3-151" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb3-152"><a href="#cb3-152" aria-hidden="true" tabindex="-1"></a>    </span>
+<span id="cb3-153"><a href="#cb3-153" aria-hidden="true" tabindex="-1"></a>    <span class="cf">return</span> (</span>
+<span id="cb3-154"><a href="#cb3-154" aria-hidden="true" tabindex="-1"></a>        ggplot(df_dispatch_plot, aes(x<span class="op">=</span><span class="st">"HourDK"</span>, y<span class="op">=</span><span class="st">"Value"</span>))</span>
+<span id="cb3-155"><a href="#cb3-155" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_bar(data<span class="op">=</span>df_dispatch_plot[df_dispatch_plot[<span class="st">"Metric"</span>] <span class="op">==</span> <span class="st">"Net_Power_MW"</span>], stat<span class="op">=</span><span class="st">"identity"</span>, fill<span class="op">=</span><span class="st">"blue"</span>, alpha<span class="op">=</span><span class="fl">0.85</span>)</span>
+<span id="cb3-156"><a href="#cb3-156" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_area(data<span class="op">=</span>df_dispatch_plot[df_dispatch_plot[<span class="st">"Metric"</span>] <span class="op">==</span> <span class="st">"SoC_MWh"</span>], fill<span class="op">=</span><span class="st">"green"</span>, alpha<span class="op">=</span><span class="fl">0.3</span>)</span>
+<span id="cb3-157"><a href="#cb3-157" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> geom_line(data<span class="op">=</span>df_dispatch_plot[df_dispatch_plot[<span class="st">"Metric"</span>] <span class="op">==</span> <span class="st">"SoC_MWh"</span>], color<span class="op">=</span><span class="st">"green"</span>, size<span class="op">=</span><span class="fl">1.2</span>)</span>
+<span id="cb3-158"><a href="#cb3-158" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> facet_wrap(<span class="st">"~Metric"</span>, ncol<span class="op">=</span><span class="dv">1</span>, scales<span class="op">=</span><span class="st">"free_y"</span>, labeller<span class="op">=</span>as_labeller({</span>
+<span id="cb3-159"><a href="#cb3-159" aria-hidden="true" tabindex="-1"></a>            <span class="st">"Net_Power_MW"</span>: <span class="st">"Battery Active Dispatch (Charge/Discharge Power, MW)"</span>,</span>
+<span id="cb3-160"><a href="#cb3-160" aria-hidden="true" tabindex="-1"></a>            <span class="st">"SoC_MWh"</span>: <span class="st">"State of Charge (SoC, MWh)"</span></span>
+<span id="cb3-161"><a href="#cb3-161" aria-hidden="true" tabindex="-1"></a>        }))</span>
+<span id="cb3-162"><a href="#cb3-162" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> theme_minimal()</span>
+<span id="cb3-163"><a href="#cb3-163" aria-hidden="true" tabindex="-1"></a>        <span class="op">+</span> labs(</span>
+<span id="cb3-164"><a href="#cb3-164" aria-hidden="true" tabindex="-1"></a>            title<span class="op">=</span><span class="st">"Optimal BESS Dispatch Schedule &amp; State of Charge (SoC)"</span>,</span>
+<span id="cb3-165"><a href="#cb3-165" aria-hidden="true" tabindex="-1"></a>            x<span class="op">=</span><span class="st">"Hour of Day"</span>,</span>
+<span id="cb3-166"><a href="#cb3-166" aria-hidden="true" tabindex="-1"></a>            y<span class="op">=</span><span class="st">"Value"</span></span>
+<span id="cb3-167"><a href="#cb3-167" aria-hidden="true" tabindex="-1"></a>        )</span>
+<span id="cb3-168"><a href="#cb3-168" aria-hidden="true" tabindex="-1"></a>    )</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="b71d8a16" class="cell" data-execution_count="4">
+<div id="57da7465" class="cell" data-execution_count="4">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="co"># ==============================================================================</span></span>
@@ -421,7 +406,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>END_DATE <span class="op">=</span> <span class="st">"2026-03-01T00:00"</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="038594fb" class="cell" data-execution_count="5">
+<div id="1b91a243" class="cell" data-execution_count="5">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.1 Fetch Data</span></span>
@@ -429,7 +414,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>df_weather_raw <span class="op">=</span> fetch_dk2_weather(START_DATE, END_DATE)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 </div>
-<div id="f120d950" class="cell" data-execution_count="6">
+<div id="40c241a7" class="cell" data-execution_count="6">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.2 Preprocess Data</span></span>
@@ -455,7 +440,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 └────────────┴────────────┴────────┴───────────┴───┴───────────┴───────────┴───────────┴───────────┘</code></pre>
 </div>
 </div>
-<div id="c16637a6" class="cell" data-execution_count="7">
+<div id="ab0a8351" class="cell" data-execution_count="7">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.3 Exploratory Data Analysis</span></span>
@@ -491,7 +476,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 </div>
 </div>
 </div>
-<div id="f5ab8eda" class="cell" data-execution_count="8">
+<div id="91929f25" class="cell" data-execution_count="8">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.4 SARIMAX Modeling</span></span>
@@ -540,7 +525,7 @@ C:\Users\david\AppData\Roaming\Python\Python314\site-packages\statsmodels\tsa\ba
 <pre><code>Day-Ahead Spot Price Forecast MAE: 132.44 DKK / MWh</code></pre>
 </div>
 </div>
-<div id="46291747" class="cell" data-execution_count="9">
+<div id="16e21c9b" class="cell" data-execution_count="9">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.5 Forecast Visualization</span></span>
@@ -564,7 +549,7 @@ C:\Users\david\AppData\Roaming\Python\Python314\site-packages\plotnine\ggplot.py
 </div>
 </div>
 </div>
-<div id="f45b1c70" class="cell" data-execution_count="10">
+<div id="bfca4404" class="cell" data-execution_count="10">
 <details class="code-fold">
 <summary>Code</summary>
 <div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb15"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.6 BESS Optimization</span></span>
@@ -579,38 +564,32 @@ C:\Users\david\AppData\Roaming\Python\Python314\site-packages\plotnine\ggplot.py
 <span id="cb15-10"><a href="#cb15-10" aria-hidden="true" tabindex="-1"></a>    <span class="cf">for</span> t <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(actual_prices))</span>
 <span id="cb15-11"><a href="#cb15-11" aria-hidden="true" tabindex="-1"></a>)</span>
 <span id="cb15-12"><a href="#cb15-12" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Expected Forecast-Planned Profit: </span><span class="sc">{</span>forecast_expected_profit<span class="sc">:,.2f}</span><span class="ss"> DKK"</span>)</span>
-<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Actual Realized Arbitrage Profit: </span><span class="sc">{</span>actual_realized_profit<span class="sc">:,.2f}</span><span class="ss"> DKK"</span>)</span>
-<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Perfect Foresight Oracle Profit : </span><span class="sc">{</span>oracle_profit<span class="sc">:,.2f}</span><span class="ss"> DKK"</span>)</span>
-<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(<span class="ss">f"Market Capture Efficiency       : </span><span class="sc">{</span>(actual_realized_profit <span class="op">/</span> oracle_profit) <span class="op">*</span> <span class="dv">100</span><span class="sc">:.1f}</span><span class="ss">%"</span>)</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<span id="cb15-13"><a href="#cb15-13" aria-hidden="true" tabindex="-1"></a><span class="co"># print(f"Expected Forecast-Planned Profit: {forecast_expected_profit:,.2f} DKK")</span></span>
+<span id="cb15-14"><a href="#cb15-14" aria-hidden="true" tabindex="-1"></a><span class="co"># print(f"Actual Realized Arbitrage Profit: {actual_realized_profit:,.2f} DKK")</span></span>
+<span id="cb15-15"><a href="#cb15-15" aria-hidden="true" tabindex="-1"></a><span class="co"># print(f"Perfect Foresight Oracle Profit : {oracle_profit:,.2f} DKK")</span></span>
+<span id="cb15-16"><a href="#cb15-16" aria-hidden="true" tabindex="-1"></a><span class="co"># print(f"Market Capture Efficiency       : {(actual_realized_profit / oracle_profit) * 100:.1f}%")</span></span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
-<div class="cell-output cell-output-stdout">
-<pre><code>Expected Forecast-Planned Profit: 7,315.56 DKK
-Actual Realized Arbitrage Profit: 862.90 DKK
-Perfect Foresight Oracle Profit : 11,844.28 DKK
-Market Capture Efficiency       : 7.3%</code></pre>
 </div>
-</div>
-<div id="e968678e" class="cell" data-execution_count="11">
+<div id="d18669a0" class="cell" data-execution_count="11">
 <details class="code-fold">
 <summary>Code</summary>
-<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb17"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.7 Dispatch Visualization</span></span>
-<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>p_dispatch <span class="op">=</span> plot_battery_dispatch(df_forecast_dispatch, df_eval_bidding)</span>
-<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>p_dispatch.save(<span class="st">"3_battery_dispatch.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
-<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(p_dispatch)</span>
-<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>p_dispatch.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
+<div class="code-copy-outer-scaffold"><div class="sourceCode cell-code" id="cb16"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb16-1"><a href="#cb16-1" aria-hidden="true" tabindex="-1"></a><span class="co"># 3.7 Dispatch Visualization</span></span>
+<span id="cb16-2"><a href="#cb16-2" aria-hidden="true" tabindex="-1"></a>p_dispatch <span class="op">=</span> plot_battery_dispatch(df_forecast_dispatch, df_eval_bidding)</span>
+<span id="cb16-3"><a href="#cb16-3" aria-hidden="true" tabindex="-1"></a>p_dispatch.save(<span class="st">"3_battery_dispatch.png"</span>, dpi<span class="op">=</span><span class="dv">150</span>)</span>
+<span id="cb16-4"><a href="#cb16-4" aria-hidden="true" tabindex="-1"></a><span class="bu">print</span>(p_dispatch)</span>
+<span id="cb16-5"><a href="#cb16-5" aria-hidden="true" tabindex="-1"></a>p_dispatch.show()</span></code></pre></div><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></div>
 </details>
 <div class="cell-output cell-output-stderr">
-<pre><code>C:\Users\david\AppData\Roaming\Python\Python314\site-packages\plotnine\ggplot.py:623: PlotnineWarning: Saving 9 x 6 in image.
+<pre><code>C:\Users\david\AppData\Roaming\Python\Python314\site-packages\plotnine\ggplot.py:623: PlotnineWarning: Saving 7.0 x 5.0 in image.
 C:\Users\david\AppData\Roaming\Python\Python314\site-packages\plotnine\ggplot.py:624: PlotnineWarning: Filename: 3_battery_dispatch.png</code></pre>
 </div>
 <div class="cell-output cell-output-stdout">
-<pre><code>&lt;ggplot: (864 x 576)&gt;</code></pre>
+<pre><code>&lt;ggplot: (672 x 480)&gt;</code></pre>
 </div>
 <div class="cell-output cell-output-display">
 <div>
 <figure class="figure">
-<p><img src="index_files/figure-html/cell-12-output-3.png" width="864" height="576" class="figure-img"></p>
+<p><img src="index_files/figure-html/cell-12-output-3.png" width="672" height="480" class="figure-img"></p>
 </figure>
 </div>
 </div>

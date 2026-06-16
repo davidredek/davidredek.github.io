@@ -26,8 +26,6 @@ import pulp
 import matplotlib
 from plotnine import *
 
-# matplotlib.use('Agg')
-
 
 # %%
 BIDDING_TIME = "2026-02-27 12:00:00"
@@ -40,7 +38,6 @@ TARGET_DAY_END = "2026-02-28 23:00:00"
 # ==============================================================================
 
 def fetch_dk2_spot_prices(start_date: str, end_date: str) -> pl.DataFrame:
-    """Fetches spot price records for DK2 price area from Energinet API."""
     url = 'https://api.energidataservice.dk/dataset/DayAheadPrices'
     params = {
         'start': start_date.replace(' ', 'T'),
@@ -63,7 +60,6 @@ def fetch_dk2_spot_prices(start_date: str, end_date: str) -> pl.DataFrame:
     )
 
 def fetch_dk2_weather(start_date: str, end_date: str) -> pl.DataFrame:
-    """Fetches weather covariates for Copenhagen from Open-Meteo Archive."""
     url = "https://archive-api.open-meteo.com/v1/archive"
     params = {
         "latitude": LATITUDE,
@@ -87,7 +83,6 @@ def fetch_dk2_weather(start_date: str, end_date: str) -> pl.DataFrame:
     ).sort("HourDK")
 
 def preprocess_data(df_price: pl.DataFrame, df_weather: pl.DataFrame) -> pl.DataFrame:
-    """Resamples prices to hourly, joins with weather, and creates time features."""
     df_price_hourly = (
         df_price
         .group_by_dynamic("HourDK", every="1h")
@@ -116,7 +111,6 @@ def preprocess_data(df_price: pl.DataFrame, df_weather: pl.DataFrame) -> pl.Data
     )
 
 def plot_price_forecast(df_eval_bidding: pl.DataFrame):
-    """Visualizes the 36h-ahead spot price forecast with 95% confidence intervals."""
     return (
         ggplot(df_eval_bidding.to_pandas(), aes(x="HourDK"))
         + geom_ribbon(aes(ymin="Lower_CI", ymax="Upper_CI", fill='"95% Confidence Interval"'), alpha=0.15)
@@ -140,7 +134,6 @@ def plot_price_forecast(df_eval_bidding: pl.DataFrame):
     )
 
 def optimize_bess_dispatch(prices: np.ndarray, scenario_name: str) -> tuple[float, pl.DataFrame]:
-    """MILP formulation to optimize battery charge/discharge schedule."""
     P_MAX = 10.0
     E_MAX = 20.0
     ETA = 0.95
@@ -182,7 +175,6 @@ def optimize_bess_dispatch(prices: np.ndarray, scenario_name: str) -> tuple[floa
     return pulp.value(prob.objective), dispatch_df
 
 def plot_battery_dispatch(df_dispatch: pl.DataFrame, df_eval: pl.DataFrame):
-    """Plots the optimal BESS schedule (bars) against State of Charge (line/area)."""
     df_dispatch_plot = df_dispatch.with_columns(
         HourDK=df_eval["HourDK"],
         Net_Power_MW=pl.col("Discharge_MW") - pl.col("Charge_MW")
@@ -203,13 +195,6 @@ def plot_battery_dispatch(df_dispatch: pl.DataFrame, df_eval: pl.DataFrame):
             "SoC_MWh": "State of Charge (SoC, MWh)"
         }))
         + theme_minimal()
-        + theme(
-            text=element_text(family="sans-serif", color="black"),
-            strip_text=element_text(face="bold", size=10),
-            plot_title=element_text(face="bold", size=12, margin={"b": 10}),
-            plot_background=element_rect(fill="white", color=None),
-            figure_size=(9, 6)
-        )
         + labs(
             title="Optimal BESS Dispatch Schedule & State of Charge (SoC)",
             x="Hour of Day",
@@ -320,10 +305,10 @@ actual_realized_profit = sum(
     for t in range(len(actual_prices))
 )
 
-print(f"Expected Forecast-Planned Profit: {forecast_expected_profit:,.2f} DKK")
-print(f"Actual Realized Arbitrage Profit: {actual_realized_profit:,.2f} DKK")
-print(f"Perfect Foresight Oracle Profit : {oracle_profit:,.2f} DKK")
-print(f"Market Capture Efficiency       : {(actual_realized_profit / oracle_profit) * 100:.1f}%")
+# print(f"Expected Forecast-Planned Profit: {forecast_expected_profit:,.2f} DKK")
+# print(f"Actual Realized Arbitrage Profit: {actual_realized_profit:,.2f} DKK")
+# print(f"Perfect Foresight Oracle Profit : {oracle_profit:,.2f} DKK")
+# print(f"Market Capture Efficiency       : {(actual_realized_profit / oracle_profit) * 100:.1f}%")
 
 # %%
 # 3.7 Dispatch Visualization
